@@ -1,0 +1,36 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="purple" x1="92" y1="72" x2="355" y2="375" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A66CFF"/>
+      <stop offset="1" stop-color="#6940E8"/>
+    </linearGradient>
+    <filter id="shadow" x="45" y="35" width="425" height="435" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#5D3BD3" flood-opacity="0.20"/>
+    </filter>
+  </defs>
+
+  <!-- Main English speech bubble -->
+  <g filter="url(#shadow)">
+    <path d="M91 91C91 55 120 29 156 29H305C341 29 370 55 370 91V218C370 254 341 280 305 280H193L126 339C117 347 103 341 103 329V280H156C120 280 91 254 91 218V91Z" fill="url(#purple)"/>
+  </g>
+
+  <!-- English A -->
+  <text x="228" y="211" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="158" font-weight="700" fill="white">A</text>
+
+  <!-- Hindi speech bubble/card -->
+  <g filter="url(#shadow)">
+    <rect x="258" y="201" width="173" height="173" rx="43" fill="white"/>
+  </g>
+  <path d="M306 374H386C407 374 424 357 424 336V278C424 257 407 240 386 240H306C285 240 268 257 268 278V336C268 357 285 374 306 374Z" fill="white" opacity="0"/>
+
+  <!-- Hindi character -->
+  <text x="344" y="322" text-anchor="middle" font-family="Noto Sans Devanagari, Mangal, Arial, sans-serif" font-size="105" font-weight="700" fill="#243B9B">अ</text>
+
+  <!-- Small decorative sparkles -->
+  <path d="M55 135L61 150L76 156L61 162L55 177L49 162L34 156L49 150L55 135Z" fill="#FFC85A"/>
+  <path d="M421 106L426 118L438 123L426 128L421 140L416 128L404 123L416 118L421 106Z" fill="#FFD77A"/>
+  <circle cx="430" cy="184" r="6" fill="#A66CFF" opacity="0.55"/>
+
+  <!-- Subtle connecting orbit line -->
+  <path d="M72 366C122 420 211 432 282 397C344 367 387 319 415 270" stroke="#B59AFB" stroke-width="7" stroke-linecap="round" opacity="0.55"/>
+</svg>
