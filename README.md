@@ -1,4 +1,4 @@
-# Neural Machine Translation System
+#Saarthi - Neural Machine Translation System
 
 A complete English-to-Hindi Neural Machine Translation system built from scratch using Transformer architecture with PyTorch.
 
