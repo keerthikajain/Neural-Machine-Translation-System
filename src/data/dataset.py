@@ -11,14 +11,19 @@ class NMTDataset(Dataset):
     Handles tokenization, padding, and batch preparation
     """
     
-    def __init__(self, english_file: str, hindi_file: str, tokenizer_path: str, 
+    def __init__(self, english_file: str = None, hindi_file: str = None, 
+                 tokenizer_path: str = None, tokenizer = None,
+                 english_sentences: List[str] = None, hindi_sentences: List[str] = None,
                  max_length: int = 512, bos_token_id: int = 2, eos_token_id: int = 3,
                  pad_token_id: int = 0):
         """
         Args:
-            english_file: Path to English sentences file
-            hindi_file: Path to Hindi sentences file  
-            tokenizer_path: Path to SentencePiece model
+            english_file: Path to English sentences file (if loading from file)
+            hindi_file: Path to Hindi sentences file (if loading from file)
+            tokenizer_path: Path to SentencePiece model (if loading tokenizer)
+            tokenizer: Pre-loaded SentencePiece tokenizer (alternative to tokenizer_path)
+            english_sentences: Pre-loaded English sentences (alternative to english_file)
+            hindi_sentences: Pre-loaded Hindi sentences (alternative to hindi_file)
             max_length: Maximum sequence length (512 for our model)
             bos_token_id: Beginning of sequence token ID (2)
             eos_token_id: End of sequence token ID (3)
@@ -29,13 +34,24 @@ class NMTDataset(Dataset):
         self.eos_token_id = eos_token_id
         self.pad_token_id = pad_token_id
         
-        # Load tokenizer
-        self.tokenizer = smp.SentencePieceProcessor()
-        self.tokenizer.load(tokenizer_path)
+        # Load or use provided tokenizer
+        if tokenizer is not None:
+            self.tokenizer = tokenizer
+        elif tokenizer_path is not None:
+            self.tokenizer = smp.SentencePieceProcessor()
+            self.tokenizer.load(tokenizer_path)
+        else:
+            raise ValueError("Must provide either tokenizer or tokenizer_path")
         
-        # Load parallel sentences
-        self.english_sentences = self._load_sentences(english_file)
-        self.hindi_sentences = self._load_sentences(hindi_file)
+        # Load or use provided sentences
+        if english_sentences is not None and hindi_sentences is not None:
+            self.english_sentences = english_sentences
+            self.hindi_sentences = hindi_sentences
+        elif english_file is not None and hindi_file is not None:
+            self.english_sentences = self._load_sentences(english_file)
+            self.hindi_sentences = self._load_sentences(hindi_file)
+        else:
+            raise ValueError("Must provide either sentence files or sentence lists")
         
         # Verify alignment
         assert len(self.english_sentences) == len(self.hindi_sentences), \

@@ -126,34 +126,69 @@ class Transformer(nn.Module):
             'trainable_parameters': trainable_params,
             'src_vocab_size': self.src_vocab_size,
             'tgt_vocab_size': self.tgt_vocab_size,
+            'd_model': self.encoder.embedding.token_embedding.d_model,
+            'n_heads': self.encoder.layers[0].self_attention.n_heads,
+            'd_ff': self.encoder.layers[0].feed_forward.linear1.out_features,
+            'max_seq_length': self.encoder.embedding.positional_encoding.pe.size(1),
             'encoder_layers': len(self.encoder.layers),
             'decoder_layers': len(self.decoder.layers)
         }
 
 
-def create_transformer_model(vocab_size=32000, d_model=512, n_heads=8, n_layers=6):
-    """
-    Factory function to create Transformer model with sensible defaults for student project
-    
-    Args:
-        vocab_size: Vocabulary size (32000 for our SentencePiece)
-        d_model: Model dimension (512 for manageable size)
-        n_heads: Attention heads (8 standard)
-        n_layers: Number of layers (6 standard)
-    Returns:
-        model: Initialized Transformer model
-    """
-    # For our project, source and target share same vocabulary (multilingual SentencePiece)
+COMPACT_A_CONFIG = {
+    'name': 'compact_a',
+    'vocab_size': 32000,
+    'd_model': 256,
+    'n_heads': 4,
+    'encoder_layers': 4,
+    'decoder_layers': 4,
+    'd_ff': 1024,
+    'max_seq_length': 128,
+    'dropout': 0.1,
+    'pad_token_id': 0,
+}
+
+
+def create_transformer_model(vocab_size=32000, d_model=512, n_heads=8, n_layers=6,
+                             d_ff=None, max_seq_length=None, dropout=0.1):
+    """Create a configurable Transformer while preserving reference defaults."""
+    if d_ff is None:
+        d_ff = d_model * 4
+    if max_seq_length is None:
+        max_seq_length = 512
+
     model = Transformer(
         src_vocab_size=vocab_size,
-        tgt_vocab_size=vocab_size,  # Same vocabulary for English and Hindi
+        tgt_vocab_size=vocab_size,
         d_model=d_model,
         n_heads=n_heads,
         n_layers=n_layers,
-        d_ff=d_model * 4,  # Standard ratio: d_ff = 4 * d_model
-        max_seq_length=512,
-        dropout=0.1,
+        d_ff=d_ff,
+        max_seq_length=max_seq_length,
+        dropout=dropout,
         pad_token_id=0
     )
-    
     return model
+
+
+def create_compact_a_model(vocab_size=32000):
+    """Create the Saarthi Compact A architecture without changing reference defaults."""
+    config = COMPACT_A_CONFIG.copy()
+    config['vocab_size'] = vocab_size
+    return Transformer(
+        src_vocab_size=config['vocab_size'],
+        tgt_vocab_size=config['vocab_size'],
+        d_model=config['d_model'],
+        n_heads=config['n_heads'],
+        n_layers=config['encoder_layers'],
+        d_ff=config['d_ff'],
+        max_seq_length=config['max_seq_length'],
+        dropout=config['dropout'],
+        pad_token_id=config['pad_token_id'],
+    )
+
+
+def get_compact_a_config(vocab_size=32000):
+    config = COMPACT_A_CONFIG.copy()
+    config['vocab_size'] = vocab_size
+    return config

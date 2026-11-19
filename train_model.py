@@ -6,7 +6,7 @@ from datetime import datetime
 
 def main():
     """
-    Launch NMT training with student-friendly defaults
+    Launch NMT training with student-friendly defaults and new optimizations
     """
     print("=" * 60)
     print("SAARTHI NMT MODEL TRAINING")
@@ -32,20 +32,24 @@ def main():
         print("\nPlease run data preprocessing and tokenizer training first.")
         return
     
-    # Student-friendly configuration
+    # Original student-friendly configuration (preserved)
     config = {
-        # Model size - manageable for student hardware
+        # Model size - manageable for student hardware  
         'vocab_size': 32000,
         'd_model': 512, 
         'n_heads': 8,
         'n_layers': 6,
-        'max_length': 256,  # Shorter sequences for faster training
+        'max_length': 256,  # Original setting
         
         # Training - conservative settings for learning
-        'batch_size': 16,   # Smaller batch size for limited GPU memory
+        'batch_size': 16,   # Original setting
         'num_epochs': 5,    # Fewer epochs for initial training
         'learning_rate': 0.0001,
         'warmup_steps': 2000,  # Reduced warmup
+        
+        # NEW: CPU optimization settings
+        'save_every_steps': 1000,    # Checkpoint every 1000 steps
+        'progress_every_steps': 50,  # Progress every 50 steps
         
         # System
         'checkpoint_dir': f'checkpoints/training_{datetime.now().strftime("%Y%m%d_%H%M%S")}'
@@ -58,16 +62,28 @@ def main():
     print(f"  Epochs: {config['num_epochs']}")
     print(f"  Max length: {config['max_length']}")
     print(f"  Checkpoint dir: {config['checkpoint_dir']}")
+    print(f"  NEW: Checkpoints every {config['save_every_steps']} steps")
+    print(f"  NEW: Progress reports every {config['progress_every_steps']} steps")
     print()
     
-    # Ask for confirmation
-    response = input("Start training? [y/N]: ").strip().lower()
-    if response not in ['y', 'yes']:
-        print("Training cancelled.")
-        return
+    print("Available options:")
+    print("1. Start full training (with periodic checkpoints)")
+    print("2. Run speed test first, then ask about training") 
+    print("3. Exit")
     
-    # Build command
-    cmd = [
+    while True:
+        choice = input("Choose option [1/2/3]: ").strip()
+        
+        if choice == '3':
+            print("Cancelled.")
+            return
+        elif choice in ['1', '2']:
+            break
+        else:
+            print("Please enter 1, 2, or 3")
+    
+    # Build base command
+    base_cmd = [
         sys.executable, 'src/training/train_nmt.py',
         '--vocab_size', str(config['vocab_size']),
         '--d_model', str(config['d_model']),
@@ -78,11 +94,23 @@ def main():
         '--num_epochs', str(config['num_epochs']),
         '--learning_rate', str(config['learning_rate']),
         '--warmup_steps', str(config['warmup_steps']),
+        '--save_every_steps', str(config['save_every_steps']),
+        '--progress_every_steps', str(config['progress_every_steps']),
         '--checkpoint_dir', config['checkpoint_dir']
     ]
     
-    print("Starting training...")
+    if choice == '2':
+        # Add speed test only flag
+        cmd = base_cmd + ['--speed_test_only', '--speed_test_samples', '1000']
+        print("Running speed test only, will exit after showing results...")
+    else:
+        cmd = base_cmd
+        print("Starting full training...")
+    
     print("Command:", ' '.join(cmd))
+    print()
+    print("IMPORTANT: Training will save checkpoints every 1000 steps.")
+    print("You can interrupt training (Ctrl+C) and resume later.")
     print()
     
     # Run training

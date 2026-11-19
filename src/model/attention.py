@@ -53,16 +53,28 @@ class MultiHeadAttention(nn.Module):
         
         # Apply mask if provided (set masked positions to large negative value)
         if mask is not None:
-            scores = scores.masked_fill(mask == 0, -1e9)
+            scores = scores.masked_fill(mask == 0, torch.finfo(scores.dtype).min)
         
         # Apply softmax to get attention weights
         attention_weights = F.softmax(scores, dim=-1)
+
+        # Fully masked rows (for example, padded target queries) have no valid
+        # key positions. Their attention values must not contribute residuals.
+        if mask is not None:
+            valid_rows = (mask.sum(dim=-1) > 0).unsqueeze(-1)
+        else:
+            valid_rows = torch.ones(
+                (scores.size(0), scores.size(1), scores.size(2), 1),
+                device=scores.device,
+                dtype=scores.dtype,
+            )
         
         # Apply dropout to attention weights
         attention_weights = self.dropout(attention_weights)
         
         # Apply attention to values
         output = torch.matmul(attention_weights, V)
+        output = output * valid_rows.to(output.dtype)
         
         return output, attention_weights
     
@@ -104,6 +116,13 @@ class MultiHeadAttention(nn.Module):
         
         # 5. Final linear projection
         output = self.w_o(attention_output)
+
+        # w_o has a bias, so reapply query validity after projection. This
+        # ensures a fully masked row remains exactly zero rather than becoming
+        # a vector containing only the projection bias.
+        if mask is not None:
+            valid_rows = (mask.sum(dim=-1) > 0).squeeze(1).unsqueeze(-1)
+            output = output * valid_rows.to(output.dtype)
         
         return output
 
