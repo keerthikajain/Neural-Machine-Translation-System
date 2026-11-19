@@ -9,6 +9,7 @@ import os
 from typing import Dict, Optional, Tuple
 from datetime import datetime
 import json
+from contextlib import nullcontext
 
 class NMTTrainer:
     """
@@ -21,7 +22,8 @@ class NMTTrainer:
                  learning_rate: float = 0.0001, warmup_steps: int = 4000,
                  vocab_size: int = 32000, label_smoothing: float = 0.1,
                  checkpoint_dir: str = "checkpoints",
-                 save_every_steps: int = 1000, progress_every_steps: int = 50):
+                 save_every_steps: int = 1000, progress_every_steps: int = 50,
+                 use_amp: bool = False):
         """
         Args:
             model: Transformer model to train
@@ -40,6 +42,12 @@ class NMTTrainer:
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.device = device
+        # Opt-in CUDA AMP; CPU and existing training behavior remain unchanged.
+        self.use_amp = bool(use_amp and device.type == 'cuda')
+        if hasattr(torch.amp, 'GradScaler'):
+            self.scaler = torch.amp.GradScaler('cuda', enabled=self.use_amp)
+        else:
+            self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)
         self.vocab_size = vocab_size
         self.checkpoint_dir = checkpoint_dir
         self.save_every_steps = save_every_steps
@@ -114,26 +122,23 @@ class NMTTrainer:
         tgt_input = batch['tgt_input'].to(self.device)
         tgt_output = batch['tgt_output'].to(self.device)
         
-        # Forward pass
-        logits = self.model(src_tokens, tgt_input)
-        
-        # Calculate loss
-        # Reshape for loss calculation: [batch_size * seq_len, vocab_size]
-        batch_size, seq_len, vocab_size = logits.shape
-        logits_flat = logits.view(-1, vocab_size)
-        targets_flat = tgt_output.view(-1)
-        
-        loss = self.criterion(logits_flat, targets_flat)
-        
-        # Backward pass
-        loss.backward()
-        
-        # Gradient clipping to prevent exploding gradients
+        # Autocast only the forward/loss; keep gradient clipping in FP32.
+        context = torch.autocast('cuda', dtype=torch.float16) if self.use_amp else nullcontext()
+        with context:
+            logits = self.model(src_tokens, tgt_input)
+            loss = self.criterion(logits.reshape(-1, logits.size(-1)),
+                                  tgt_output.reshape(-1))
+
+        self.scaler.scale(loss).backward()
+        self.scaler.unscale_(self.optimizer)
         torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
-        
-        # Optimizer step
-        self.optimizer.step()
-        self.scheduler.step()
+
+        # GradScaler can skip an optimizer step on overflow.
+        scale_before = self.scaler.get_scale()
+        self.scaler.step(self.optimizer)
+        self.scaler.update()
+        if self.scaler.get_scale() >= scale_before:
+            self.scheduler.step()
         actual_lr = self.optimizer.param_groups[0]['lr']
         self.learning_rates_after_optimizer_steps.append(actual_lr)
         
@@ -159,16 +164,12 @@ class NMTTrainer:
                 tgt_input = batch['tgt_input'].to(self.device)
                 tgt_output = batch['tgt_output'].to(self.device)
                 
-                # Forward pass
-                logits = self.model(src_tokens, tgt_input)
-                
-                # Calculate loss
-                batch_size, seq_len, vocab_size = logits.shape
-                logits_flat = logits.view(-1, vocab_size)
-                targets_flat = tgt_output.view(-1)
-                
-                loss = self.criterion(logits_flat, targets_flat)
-                
+                context = torch.autocast('cuda', dtype=torch.float16) if self.use_amp else nullcontext()
+                with context:
+                    logits = self.model(src_tokens, tgt_input)
+                    loss = self.criterion(logits.reshape(-1, logits.size(-1)),
+                                          tgt_output.reshape(-1))
+
                 total_loss += loss.item()
                 num_batches += 1
         
@@ -339,6 +340,7 @@ class NMTTrainer:
             'timestamp': datetime.now().isoformat(),
             'epoch_completed': epoch_completed,
             'best_val_loss': self.best_val_loss,
+            'amp_scaler_state_dict': self.scaler.state_dict(),
         }
 
     def _cleanup_old_checkpoints(self, keep_last: int = 5) -> None:
@@ -371,6 +373,8 @@ class NMTTrainer:
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        if 'amp_scaler_state_dict' in checkpoint:
+            self.scaler.load_state_dict(checkpoint['amp_scaler_state_dict'])
         
         self.epoch = checkpoint['epoch']
         self.step = checkpoint['step']
@@ -522,30 +526,18 @@ class LabelSmoothingCrossEntropy(nn.Module):
         Returns:
             torch.Tensor: Smoothed cross entropy loss
         """
-        # Create mask for padding tokens
+        # Equivalent to the original smoothing (including off-target classes),
+        # without allocating a full [tokens, vocabulary] target matrix.
         mask = (targets != self.ignore_index)
-        
-        if not mask.any():
-            return torch.tensor(0.0, device=logits.device, requires_grad=True)
-        
-        # Apply mask
         logits = logits[mask]
         targets = targets[mask]
-        
-        # Convert to log probabilities
-        log_probs = torch.log_softmax(logits, dim=-1)
-        
-        # Create smoothed target distribution
-        # (1 - smoothing) for correct class, smoothing / (num_classes - 1) for others
-        with torch.no_grad():
-            true_dist = torch.zeros_like(log_probs)
-            true_dist.fill_(self.smoothing / (self.num_classes - 1))
-            true_dist.scatter_(1, targets.unsqueeze(1), 1.0 - self.smoothing)
-        
-        # Calculate loss
-        loss = -torch.sum(true_dist * log_probs, dim=-1).mean()
-        
-        return loss
+        if targets.numel() == 0:
+            return logits.sum() * 0.0
+
+        log_probs = torch.log_softmax(logits.float(), dim=-1)
+        nll = -log_probs.gather(1, targets.unsqueeze(1)).squeeze(1)
+        other = (-log_probs.sum(dim=-1) - nll) / (self.num_classes - 1)
+        return ((1.0 - self.smoothing) * nll + self.smoothing * other).mean()
 
 
 class TransformerLRScheduler:
