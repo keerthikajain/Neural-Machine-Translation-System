@@ -20,7 +20,8 @@ class NMTTrainer:
                  val_loader: DataLoader, device: torch.device,
                  learning_rate: float = 0.0001, warmup_steps: int = 4000,
                  vocab_size: int = 32000, label_smoothing: float = 0.1,
-                 checkpoint_dir: str = "checkpoints"):
+                 checkpoint_dir: str = "checkpoints",
+                 save_every_steps: int = 1000, progress_every_steps: int = 50):
         """
         Args:
             model: Transformer model to train
@@ -32,6 +33,8 @@ class NMTTrainer:
             vocab_size: Vocabulary size for loss calculation (32000)
             label_smoothing: Label smoothing factor (0.1 typical)
             checkpoint_dir: Directory to save checkpoints
+            save_every_steps: Save checkpoint every N training steps (1000 default)
+            progress_every_steps: Report progress every N training steps (50 default)
         """
         self.model = model.to(device)
         self.train_loader = train_loader
@@ -39,6 +42,8 @@ class NMTTrainer:
         self.device = device
         self.vocab_size = vocab_size
         self.checkpoint_dir = checkpoint_dir
+        self.save_every_steps = save_every_steps
+        self.progress_every_steps = progress_every_steps
         
         # Create checkpoint directory
         os.makedirs(checkpoint_dir, exist_ok=True)
@@ -73,6 +78,14 @@ class NMTTrainer:
         self.train_losses = []
         self.val_losses = []
         self.learning_rates = []
+        self.learning_rates_after_optimizer_steps = []
+        self.warmup_steps = warmup_steps
+        self._resume_epoch = None
+        
+        # Timing for progress reporting
+        self.training_start_time = None
+        self.epoch_start_time = None
+        self.step_times = []
         
         print(f"Trainer initialized:")
         print(f"  Device: {device}")
@@ -80,6 +93,8 @@ class NMTTrainer:
         print(f"  Training samples: {len(train_loader.dataset)}")
         print(f"  Validation samples: {len(val_loader.dataset)}")
         print(f"  Batch size: {train_loader.batch_size}")
+        print(f"  Periodic checkpoints every: {save_every_steps} steps")
+        print(f"  Progress reports every: {progress_every_steps} steps")
         
     def train_step(self, batch: Dict[str, torch.Tensor]) -> float:
         """
@@ -119,6 +134,8 @@ class NMTTrainer:
         # Optimizer step
         self.optimizer.step()
         self.scheduler.step()
+        actual_lr = self.optimizer.param_groups[0]['lr']
+        self.learning_rates_after_optimizer_steps.append(actual_lr)
         
         self.step += 1
         
@@ -158,66 +175,156 @@ class NMTTrainer:
         avg_loss = total_loss / num_batches if num_batches > 0 else 0.0
         return avg_loss
     
-    def train_epoch(self) -> Tuple[float, float]:
+    def train_epoch(self, speed_test_mode: bool = False, speed_test_samples: int = 1000) -> Tuple[float, float]:
         """
-        Train for one epoch
+        Train for one epoch with periodic checkpointing and detailed progress reporting
         
+        Args:
+            speed_test_mode: If True, train only on speed_test_samples for performance measurement
+            speed_test_samples: Number of samples to use in speed test mode
+            
         Returns:
             Tuple[float, float]: (average_train_loss, validation_loss)
         """
-        start_time = time.time()
+        if self.epoch_start_time is None:
+            self.epoch_start_time = time.time()
+        
+        if self.training_start_time is None:
+            self.training_start_time = self.epoch_start_time
+            
         total_train_loss = 0.0
         num_batches = len(self.train_loader)
         
+        if speed_test_mode:
+            # Calculate how many batches we need for speed_test_samples
+            samples_per_batch = self.train_loader.batch_size
+            max_batches = min(num_batches, (speed_test_samples + samples_per_batch - 1) // samples_per_batch)
+            print(f"SPEED TEST MODE: Training on ~{max_batches * samples_per_batch} samples ({max_batches} batches)")
+            num_batches = max_batches
+        
         print(f"Epoch {self.epoch + 1} - Training...")
         
+        batch_times = []
+        
         for batch_idx, batch in enumerate(self.train_loader):
+            if speed_test_mode and batch_idx >= num_batches:
+                break
+                
+            batch_start_time = time.time()
+            
             # Training step
             train_loss = self.train_step(batch)
             total_train_loss += train_loss
             
-            # Log progress every 100 steps
-            if (batch_idx + 1) % 100 == 0:
+            batch_time = time.time() - batch_start_time
+            batch_times.append(batch_time)
+            
+            # Progress reporting every N steps
+            if self.step % self.progress_every_steps == 0:
                 current_lr = self.scheduler.get_last_lr()[0]
-                elapsed = time.time() - start_time
+                total_elapsed = time.time() - self.training_start_time
+                epoch_elapsed = time.time() - self.epoch_start_time
+                
+                # Calculate processing speed
+                recent_times = batch_times[-10:] if len(batch_times) >= 10 else batch_times
+                avg_batch_time = sum(recent_times) / len(recent_times) if recent_times else 0
+                samples_per_sec = self.train_loader.batch_size / avg_batch_time if avg_batch_time > 0 else 0
                 
                 print(f"  Step {self.step:6d} | "
                       f"Batch {batch_idx + 1:4d}/{num_batches} | "
                       f"Loss: {train_loss:.4f} | "
                       f"LR: {current_lr:.6f} | "
-                      f"Time: {elapsed:.1f}s")
+                      f"Speed: {samples_per_sec:.1f} samples/sec | "
+                      f"Epoch time: {epoch_elapsed:.1f}s | "
+                      f"Total time: {total_elapsed:.1f}s")
+            
+            # Periodic checkpointing during epoch
+            if not speed_test_mode and self.step % self.save_every_steps == 0:
+                checkpoint_path = self.save_periodic_checkpoint()
+                print(f"  Periodic checkpoint saved: {os.path.basename(checkpoint_path)}")
         
         # Calculate average training loss
         avg_train_loss = total_train_loss / num_batches
         
-        # Validation
+        # Speed test mode: calculate and report performance metrics
+        if speed_test_mode:
+            total_batch_time = sum(batch_times)
+            avg_batch_time = total_batch_time / len(batch_times)
+            total_samples = num_batches * self.train_loader.batch_size
+            samples_per_sec = total_samples / total_batch_time
+            
+            print(f"  SPEED TEST RESULTS:")
+            print(f"     Samples processed: {total_samples}")
+            print(f"     Total time: {total_batch_time:.1f}s")
+            print(f"     Avg batch time: {avg_batch_time:.2f}s")
+            print(f"     Processing speed: {samples_per_sec:.1f} samples/sec")
+            
+            # Estimate full training time
+            full_dataset_size = len(self.train_loader.dataset)
+            estimated_epoch_time = (full_dataset_size / samples_per_sec) / 3600  # in hours
+            print(f"     Estimated time per full epoch: {estimated_epoch_time:.1f} hours")
+            
+            # Skip validation in speed test mode
+            return avg_train_loss, 0.0
+        
+        # Validation (not in speed test mode)
         print("  Validating...")
+        val_start_time = time.time()
         val_loss = self.validate()
+        val_time = time.time() - val_start_time
         
         # Update tracking
         self.train_losses.append(avg_train_loss)
         self.val_losses.append(val_loss)
         self.learning_rates.append(self.scheduler.get_last_lr()[0])
         
-        epoch_time = time.time() - start_time
+        epoch_time = time.time() - self.epoch_start_time
         
         print(f"  Epoch {self.epoch + 1} complete:")
         print(f"    Train Loss: {avg_train_loss:.4f}")
         print(f"    Val Loss: {val_loss:.4f}")
-        print(f"    Time: {epoch_time:.1f}s")
+        print(f"    Epoch Time: {epoch_time:.1f}s")
+        print(f"    Val Time: {val_time:.1f}s")
         print(f"    LR: {self.learning_rates[-1]:.6f}")
+        
+        # Reset epoch start time for next epoch
+        self.epoch_start_time = None
         
         return avg_train_loss, val_loss
     
-    def save_checkpoint(self, filepath: str, is_best: bool = False) -> None:
+    def save_periodic_checkpoint(self, suffix: str = None) -> str:
         """
-        Save model checkpoint
+        Save periodic checkpoint during training (safe overwrite strategy)
         
         Args:
-            filepath: Path to save checkpoint
-            is_best: Whether this is the best model so far
+            suffix: Optional suffix for checkpoint filename
+            
+        Returns:
+            str: Path to saved checkpoint
         """
-        checkpoint = {
+        if suffix:
+            checkpoint_name = f'checkpoint_step_{self.step}_{suffix}.pt'
+        else:
+            checkpoint_name = f'checkpoint_step_{self.step}.pt'
+            
+        filepath = os.path.join(self.checkpoint_dir, checkpoint_name)
+        
+        checkpoint = self._create_checkpoint_payload(epoch_completed=False)
+        
+        # Save to temporary file first, then rename (atomic operation)
+        temp_filepath = filepath + '.tmp'
+        torch.save(checkpoint, temp_filepath)
+        
+        # On Windows, need to handle existing file
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        os.rename(temp_filepath, filepath)
+        self._cleanup_old_checkpoints()
+        return filepath
+
+    def _create_checkpoint_payload(self, epoch_completed: bool = True) -> dict:
+        """Create the complete state needed to resume training."""
+        return {
             'epoch': self.epoch,
             'step': self.step,
             'model_state_dict': self.model.state_dict(),
@@ -226,15 +333,31 @@ class NMTTrainer:
             'train_losses': self.train_losses,
             'val_losses': self.val_losses,
             'learning_rates': self.learning_rates,
-            'best_val_loss': self.best_val_loss
+            'learning_rates_after_optimizer_steps': self.learning_rates_after_optimizer_steps,
+            'warmup_steps': self.warmup_steps,
+            'architecture': self.model.get_model_info() if hasattr(self.model, 'get_model_info') else None,
+            'timestamp': datetime.now().isoformat(),
+            'epoch_completed': epoch_completed,
+            'best_val_loss': self.best_val_loss,
         }
-        
+
+    def _cleanup_old_checkpoints(self, keep_last: int = 5) -> None:
+        """Keep the newest periodic checkpoints and remove older ones."""
+        import glob
+        pattern = os.path.join(self.checkpoint_dir, 'checkpoint_step_*.pt')
+        checkpoints = sorted(glob.glob(pattern), key=os.path.getmtime, reverse=True)
+        for old_checkpoint in checkpoints[keep_last:]:
+            os.remove(old_checkpoint)
+
+    def save_checkpoint(self, filepath: str, is_best: bool = False, epoch_completed: bool = True) -> None:
+        """Save one complete checkpoint and optionally update best_model.pt."""
+        checkpoint = self._create_checkpoint_payload(epoch_completed=epoch_completed)
         torch.save(checkpoint, filepath)
-        
+
         if is_best:
             best_path = os.path.join(self.checkpoint_dir, 'best_model.pt')
             torch.save(checkpoint, best_path)
-            print(f"    ✅ New best model saved: {best_path}")
+            print(f"     New best model saved: {best_path}")
     
     def load_checkpoint(self, filepath: str) -> None:
         """
@@ -254,27 +377,83 @@ class NMTTrainer:
         self.train_losses = checkpoint['train_losses']
         self.val_losses = checkpoint['val_losses']
         self.learning_rates = checkpoint['learning_rates']
-        self.best_val_loss = checkpoint['best_val_loss']
+        self.learning_rates_after_optimizer_steps = checkpoint.get('learning_rates_after_optimizer_steps', [])
+        self.warmup_steps = checkpoint.get('warmup_steps', self.warmup_steps)
+        self.best_val_loss = checkpoint.get('best_val_loss', float('inf'))
+        completed = checkpoint.get('epoch_completed', True)
+        self._resume_epoch = checkpoint['epoch'] + 1 if completed else checkpoint['epoch']
         
         print(f"Checkpoint loaded from {filepath}")
-        print(f"  Resuming from epoch {self.epoch + 1}, step {self.step}")
+        print(f"  Resuming from epoch {self._resume_epoch + 1}, step {self.step}")
     
-    def train(self, num_epochs: int, save_every: int = 1, 
-             early_stopping_patience: int = 5) -> None:
+    def speed_test(self, num_samples: int = 1000) -> Dict[str, float]:
         """
-        Main training loop
+        Run speed test on a subset of training data to measure performance
+        
+        Args:
+            num_samples: Number of training samples to use for speed test
+            
+        Returns:
+            Dict with speed test metrics
+        """
+        print(f"Running speed test with {num_samples} samples...")
+        
+        # Save original state
+        original_epoch = self.epoch
+        original_step = self.step
+        
+        # Run speed test epoch
+        self.epoch = 0  # Reset for clean metrics
+        self.step = 0
+        
+        train_loss, _ = self.train_epoch(speed_test_mode=True, speed_test_samples=num_samples)
+        
+        # Calculate metrics from the test
+        samples_per_batch = self.train_loader.batch_size
+        batches_processed = min(len(self.train_loader), (num_samples + samples_per_batch - 1) // samples_per_batch)
+        actual_samples = batches_processed * samples_per_batch
+        
+        # Restore original state
+        self.epoch = original_epoch
+        self.step = original_step
+        
+        return {
+            'samples_processed': actual_samples,
+            'batches_processed': batches_processed,
+            'train_loss': train_loss
+        }
+
+    def train(self, num_epochs: int, save_every: int = 1, 
+             early_stopping_patience: int = 5, speed_test_first: bool = False, 
+             speed_test_samples: int = 1000) -> None:
+        """
+        Main training loop with optional speed test
         
         Args:
             num_epochs: Number of epochs to train
             save_every: Save checkpoint every N epochs
             early_stopping_patience: Stop if no improvement for N epochs
+            speed_test_first: Run speed test before full training
+            speed_test_samples: Number of samples for speed test
         """
         print(f"Starting training for {num_epochs} epochs...")
         print(f"Checkpoint directory: {self.checkpoint_dir}")
+        print(f"Periodic checkpoints every {self.save_every_steps} steps")
+        print(f"Progress reports every {self.progress_every_steps} steps")
+        
+        # Optional speed test
+        if speed_test_first:
+            self.speed_test(speed_test_samples)
+            print("\nSpeed test complete. Starting full training...")
+            print("-" * 60)
         
         patience_counter = 0
         
-        for epoch in range(num_epochs):
+        start_epoch = self._resume_epoch if self._resume_epoch is not None else self.epoch
+        if self._resume_epoch is not None:
+            print(f"Continuing training from epoch {start_epoch + 1}")
+
+        for epoch in range(start_epoch, num_epochs):
             self.epoch = epoch
             
             # Train one epoch

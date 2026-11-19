@@ -35,7 +35,7 @@ class DecoderLayer(nn.Module):
         # Dropout
         self.dropout = nn.Dropout(dropout)
         
-    def forward(self, x, encoder_output, tgt_mask=None, src_mask=None):
+    def forward(self, x, encoder_output, tgt_mask=None, src_mask=None, tgt_padding_mask=None):
         """
         Forward pass of decoder layer
         
@@ -59,6 +59,9 @@ class DecoderLayer(nn.Module):
         # 3. Feed-forward network
         ff_output = self.feed_forward(x)
         x = self.norm3(x + self.dropout(ff_output))
+
+        if tgt_padding_mask is not None:
+            x = x * tgt_padding_mask.to(x.dtype).unsqueeze(-1)
         
         return x
 
@@ -112,13 +115,15 @@ class TransformerDecoder(nn.Module):
         """
         # 1. Get target embeddings
         x = self.embedding(tgt_tokens)
+        tgt_padding_mask = (tgt_tokens != 0)
         
         # 2. Pass through decoder layers
         for layer in self.layers:
-            x = layer(x, encoder_output, tgt_mask, src_mask)
+            x = layer(x, encoder_output, tgt_mask, src_mask, tgt_padding_mask)
         
         # 3. Project to vocabulary size
         logits = self.output_projection(x)
+        logits = logits * tgt_padding_mask.to(logits.dtype).unsqueeze(-1)
         
         return logits
 
@@ -143,28 +148,23 @@ def create_causal_mask(seq_len, device):
 
 def create_target_mask(tgt_tokens, pad_token_id=0):
     """
-    Create combined padding and causal mask for target sequence
-    
-    Args:
-        tgt_tokens: Target token tensor [batch_size, tgt_len]
-        pad_token_id: ID of padding token
-    Returns:
-        mask: Combined mask [batch_size, 1, tgt_len, tgt_len]
+    Create a combined padding and causal mask for decoder self-attention.
+
+    Masked positions are represented by 0 and allowed positions by 1.
+    The returned shape is [batch_size, 1, tgt_len, tgt_len], so it
+    broadcasts across attention heads.
     """
     batch_size, tgt_len = tgt_tokens.size()
     device = tgt_tokens.device
-    
-    # Create padding mask
-    pad_mask = (tgt_tokens != pad_token_id).unsqueeze(1).float()  # [batch_size, 1, tgt_len]
-    
-    # Create causal mask  
-    causal_mask = create_causal_mask(tgt_len, device).squeeze(0).squeeze(0)  # [tgt_len, tgt_len]
-    
-    # Expand padding mask to match causal mask
-    pad_mask_expanded = pad_mask.unsqueeze(-1)  # [batch_size, 1, tgt_len, 1]
-    causal_mask_expanded = causal_mask.unsqueeze(0).unsqueeze(0)  # [1, 1, tgt_len, tgt_len]
-    
-    # Combine masks
-    combined_mask = pad_mask_expanded * causal_mask_expanded  # [batch_size, 1, tgt_len, tgt_len]
-    
-    return combined_mask
+
+    # Keys: PAD positions may not be attended by any target query.
+    key_mask = (tgt_tokens != pad_token_id).unsqueeze(1).unsqueeze(2)
+
+    # Queries: PAD positions may not attend or be attended to. Marking their
+    # entire row as masked also prevents padded decoder positions from
+    # leaking meaningful attention values into later computation.
+    query_mask = (tgt_tokens != pad_token_id).unsqueeze(1).unsqueeze(-1)
+
+    causal_mask = create_causal_mask(tgt_len, device)
+
+    return query_mask.float() * key_mask.float() * causal_mask
