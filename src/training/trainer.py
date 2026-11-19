@@ -38,7 +38,11 @@ class NMTTrainer:
         self.val_loader = val_loader
         self.device = device
         self.use_amp = device.type == 'cuda'
-        self.scaler = torch.amp.GradScaler('cuda', enabled=self.use_amp)
+        # torch.amp.GradScaler was introduced after older supported PyTorch 2.x.
+        if hasattr(torch.amp, 'GradScaler'):
+            self.scaler = torch.amp.GradScaler('cuda', enabled=self.use_amp)
+        else:
+            self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)
         self.vocab_size = vocab_size
         self.checkpoint_dir = checkpoint_dir
         
