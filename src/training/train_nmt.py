@@ -52,7 +52,8 @@ def create_training_config(args):
             'warmup_steps': args.warmup_steps,
             'num_epochs': args.num_epochs,
             'label_smoothing': args.label_smoothing,
-            'max_length': args.max_length
+            'max_length': args.max_length,
+            'mixed_precision': args.mixed_precision
         },
         'data': {
             'train_english': args.train_english,
@@ -368,6 +369,8 @@ def main():
     parser.add_argument('--warmup_steps', type=int, default=4000, help='Warmup steps')
     parser.add_argument('--num_epochs', type=int, default=10, help='Number of epochs')
     parser.add_argument('--label_smoothing', type=float, default=0.1, help='Label smoothing factor')
+    parser.add_argument('--mixed_precision', action='store_true',
+                        help='Opt in to CUDA FP16 automatic mixed precision')
     
     # NEW: Performance and checkpointing parameters
     parser.add_argument('--save_every_steps', type=int, default=1000, help='Save checkpoint every N steps')
@@ -507,7 +510,8 @@ def main():
         label_smoothing=args.label_smoothing,
         checkpoint_dir=args.checkpoint_dir,
         save_every_steps=args.save_every_steps,
-        progress_every_steps=args.progress_every_steps
+        progress_every_steps=args.progress_every_steps,
+        use_amp=args.mixed_precision
     )
     
     # Save training configuration
