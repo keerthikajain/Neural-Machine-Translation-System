@@ -192,14 +192,14 @@ def main():
         print("\nTraining interrupted by user")
         # Save current state
         interrupt_path = os.path.join(args.checkpoint_dir, 'interrupted_checkpoint.pt')
-        trainer.save_checkpoint(interrupt_path)
+        trainer.save_checkpoint(interrupt_path, epoch_complete=False)
         print(f"Checkpoint saved: {interrupt_path}")
         
     except Exception as e:
         print(f"\nTraining failed with error: {e}")
         # Save current state for debugging
         error_path = os.path.join(args.checkpoint_dir, 'error_checkpoint.pt')
-        trainer.save_checkpoint(error_path)
+        trainer.save_checkpoint(error_path, epoch_complete=False)
         print(f"Error checkpoint saved: {error_path}")
         raise
     
