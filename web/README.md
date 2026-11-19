@@ -34,3 +34,15 @@ The frontend has no build dependencies, does not alter backend, training, model,
 ## Design reference
 
 Pastel lavender/pink palette, lotus branding, welcome landscape, mobile tab navigation and desktop sidebar were taken from the provided Saarthi image. The two existing landscape PNGs and SVG logo are loaded from the repository. Fonts and proportions are approximations; compare rendered screenshots with the reference before declaring a pixel-match.
+
+## Exact repository assets (no generated or substitute artwork)
+
+| Reference role | Repository file | Used in |
+|---|---|---|
+| Welcome landscape | `public/illustrations/splash-landscape.png` | Welcome artwork and subtle result-card decoration |
+| Desktop landmark landscape | `public/illustrations/desktop-landscape-fixed(1).png` | Desktop workspace bottom background |
+| Current Saarthi brand logo | `public/illustrations/saarthi-logo.svg` | Welcome, desktop/mobile brand, browser icon |
+
+**Reference mismatch requiring the original asset:** the checked-in SVG logo depicts overlapping English/Hindi speech bubbles (“A / अ”), while the supplied UI reference depicts a multicolored lotus. To follow the instruction to use exactly the checked-in assets, the interface deliberately keeps the original SVG rather than redrawing or replacing it. A pixel-accurate lotus match requires the actual lotus logo source file in the repository.
+
+Screens and spacing target the provided reference; browser rendering, exact image cropping, fonts, and responsive breakpoints still need screenshot comparison before claiming 1:1 fidelity. No image file was changed.
