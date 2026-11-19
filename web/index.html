@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#faf7ff">
+  <meta name="description" content="Saarthi — bridging languages, building connections.">
+  <title>Saarthi — English to Hindi</title>
+  <link rel="icon" href="../public/illustrations/saarthi-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <section id="welcome" class="welcome" aria-label="Welcome to Saarthi">
+      <div class="welcome-content">
+        <img class="welcome-logo" src="../public/illustrations/saarthi-logo.svg" alt="Saarthi lotus logo">
+        <h1>Saarthi</h1>
+        <p>Bridging languages,<br>building connections.</p>
+        <p class="welcome-subtitle">Translate <span>•</span> Learn <span>•</span> Connect</p>
+      </div>
+      <img class="welcome-art" src="../public/illustrations/splash-landscape.png" alt="Pastel landscape with Indian landmarks">
+      <div class="welcome-bottom">
+        <button id="get-started" class="primary-btn">Get Started <span aria-hidden="true">→</span></button>
+        <small>A step towards a more connected world</small>
+        <div class="pagination" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+    </section>
+    <div id="workspace" class="workspace hidden">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+          <div class="brand brand-side"><img src="../public/illustrations/saarthi-logo.svg" alt=""><div><strong>Saarthi</strong><small>Bridging languages,<br>building connections.</small></div></div>
+          <button id="close-menu" class="icon-btn mobile-only" aria-label="Close navigation">✕</button>
+        </div>
+        <nav aria-label="Primary navigation">
+          <button class="side-link active" data-view="translate"><span>⌂</span> Translate</button>
+          <button class="side-link" data-view="history"><span>◷</span> History</button>
+          <button class="side-link" data-view="phrases"><span>◉</span> Quick Phrases</button>
+          <hr>
+          <button class="side-link" data-view="about"><span>ⓘ</span> About Saarthi</button>
+          <button class="side-link" data-view="settings"><span>⚙</span> Settings</button>
+          <button class="side-link" data-view="help"><span>ⓘ</span> Help &amp; Feedback</button>
+        </nav>
+        <div class="sidebar-footer">Languages connect people 💜<small>v1.0.0 — UI preview</small></div>
+      </aside>
+      <div id="backdrop" class="backdrop hidden"></div>
+      <main class="main">
+        <header class="topbar">
+          <button id="open-menu" class="icon-btn mobile-only" aria-label="Open navigation">☰</button>
+          <div class="brand brand-top"><img src="../public/illustrations/saarthi-logo.svg" alt=""><div><strong>Saarthi</strong><small>Bridging languages, building connections.</small></div></div>
+          <div class="user-avatar" aria-label="Profile">K</div>
+        </header>
+        <div class="desktop-heading"><h1 id="page-title">Translate with Saarthi</h1><p>Bridging languages, building connections.</p></div>
+        <nav class="tabs" aria-label="Workspace sections">
+          <button class="tab active" data-view="translate">Translate</button>
+          <button class="tab" data-view="history">History</button>
+          <button class="tab" data-view="phrases">Quick Phrases</button>
+        </nav>
+        <section class="view active" id="view-translate" aria-labelledby="translate-heading">
+          <h2 id="translate-heading" class="sr-only">Translate English to Hindi</h2>
+          <div class="language-bar">
+            <div class="language-select"><span class="flag">🇬🇧</span><span><strong>English</strong><small>(source)</small></span><span class="chevron">⌄</span></div>
+            <span class="swap" title="English to Hindi only; reverse direction is not yet supported" aria-label="English to Hindi only">⇄</span>
+            <div class="language-select"><span class="flag">🇮🇳</span><span><strong>Hindi</strong><small>(target)</small></span><span class="chevron">⌄</span></div>
+          </div>
+          <div class="translation-grid">
+            <div class="input-panel">
+              <label for="english-input">Enter English text</label>
+              <div class="input-card">
+                <textarea id="english-input" maxlength="5000" placeholder="Enter English text here..." rows="7"></textarea>
+                <div class="input-tools">
+                  <button class="icon-btn" id="speak-input" title="Voice input" aria-label="Dictate English text">🎙</button>
+                  <button class="icon-btn" id="clear-input" aria-label="Clear English input">✕</button>
+                  <span class="count" id="character-count">0/5000</span>
+                </div>
+              </div>
+            </div>
+            <div class="result-panel">
+              <div class="result-head"><strong>Hindi Translation</strong><button class="icon-btn" id="copy-result" aria-label="Copy Hindi translation">▢</button></div>
+              <div id="result-empty" class="result-empty"><span class="bubble">☷</span><p>Your Hindi translation<br>will appear here.</p></div>
+              <div id="result-full" class="result-full hidden"><p lang="hi" id="hindi-result"></p><div class="result-tools"><button class="icon-btn" id="speak-result" aria-label="Read Hindi translation">🔊</button><span class="stretch"></span><button class="soft-btn" id="copy-result-bottom">▢ Copy</button><button class="soft-btn" id="clear-result">✕ Clear</button></div></div>
+            </div>
+          </div>
+          <button id="translate-btn" class="primary-btn translate-button">➤ &nbsp;Translate</button>
+          <p id="translation-notice" class="notice" aria-live="polite"></p>
+          <section class="quick-phrases-inline" id="quick-phrases" aria-labelledby="phrases-heading">
+            <div class="quick-phrases-heading">
+              <div><h2 id="phrases-heading">Quick Phrases</h2><p>Tap a phrase to translate instantly</p></div>
+              <span class="phrasebook-label">Phrasebook examples</span>
+            </div>
+            <div id="phrase-grid" class="phrase-grid"></div>
+          </section>
+        </section>
+        <section class="view" id="view-history" aria-labelledby="history-heading">
+          <h2 id="history-heading">Translation History</h2>
+          <label class="search"><span aria-hidden="true">⌕</span><input id="history-search" placeholder="Search your translations..." aria-label="Search translation history"></label>
+          <div id="history-list" class="history-list"></div>
+        </section>
+        <section class="view info-view" id="view-about"><h2>About Saarthi</h2><p>Saarthi is an English-to-Hindi neural machine translation project built with PyTorch and SentencePiece.</p><p>This interface is a preview while the translation model is being trained.</p></section>
+        <section class="view info-view" id="view-settings"><h2>Settings</h2><p>Current translation direction: English → Hindi.</p><p>Additional language options will be available only when the corresponding models are supported.</p></section>
+        <section class="view info-view" id="view-help"><h2>Help &amp; Feedback</h2><p>Use Quick Phrases for built-in verified example translations. New text needs a trained model and a connected inference API.</p><p>Microphone input is available when your browser supports speech recognition.</p></section>
+        <footer class="page-footer">A step towards a more connected world. <span>Made with ♥ for a multilingual future.</span></footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
