@@ -245,3 +245,76 @@
   .translation-grid { width: 100%; }
   .input-card, .result-panel { backdrop-filter: none; }
 }
+
+
+/* Integrated quick phrases and more legible illustrated desktop footer */
+.quick-phrases-inline {
+  width: 100%;
+  max-width: 860px;
+  margin: 24px auto 42px;
+  padding: 18px 20px 20px;
+  background: rgba(255,255,255,.76);
+  border: 1px solid rgba(222,215,246,.85);
+  border-radius: 19px;
+  box-shadow: 0 8px 25px rgba(70,44,120,.055);
+  scroll-margin-top: 18px;
+}
+.quick-phrases-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.quick-phrases-heading h2 { font-size: 16px; margin: 0 0 3px; color: #261876; }
+.quick-phrases-heading p { font-size: 12px; color: #7b7597; margin: 0; }
+.phrasebook-label {
+  font-size: 10px;
+  color: #6c53a6;
+  background: #f1eaff;
+  padding: 6px 9px;
+  border-radius: 20px;
+  flex: 0 0 auto;
+}
+.quick-phrases-inline .phrase-grid { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 9px; }
+.quick-phrases-inline .phrase-card {
+  min-height: 70px;
+  padding: 10px;
+  border-radius: 12px;
+  gap: 7px;
+  box-shadow: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.quick-phrases-inline .phrase-card:hover { transform: translateY(-2px); box-shadow: 0 5px 14px #34245e12; }
+.quick-phrases-inline .phrase-card span { font-size: 18px; }
+.quick-phrases-inline .phrase-card strong { font-size: 11px; line-height: 1.35; }
+.quick-phrases-inline .phrase-card small { font-size: 11px; margin-top: 5px; line-height: 1.45; }
+@media (min-width: 701px) {
+  .workspace .main::before {
+    opacity: .73;
+    filter: blur(.65px) saturate(.98);
+    height: clamp(185px, 33dvh, 350px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.30) 15%, rgba(0,0,0,.95) 47%, black 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.30) 15%, rgba(0,0,0,.95) 47%, black 100%);
+  }
+  .quick-phrases-inline { position: relative; z-index: 1; }
+  .workspace .main { overflow-x: hidden; overflow-y: auto; }
+  .page-footer { padding-top: 12px; }
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  .quick-phrases-inline .phrase-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 700px) {
+  .quick-phrases-inline { margin: 19px auto 30px; padding: 14px 11px; border-radius: 15px; }
+  .quick-phrases-heading h2 { font-size: 15px; }
+  .quick-phrases-heading p { font-size: 11px; }
+  .phrasebook-label { display: none; }
+  .quick-phrases-inline .phrase-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .quick-phrases-inline .phrase-card { min-height: 78px; padding: 9px 7px; }
+  .quick-phrases-inline .phrase-card strong { font-size: 11px; }
+  .quick-phrases-inline .phrase-card small { font-size: 10px; }
+}
+@media (max-width: 355px) {
+  .quick-phrases-inline .phrase-card { gap: 5px; }
+  .quick-phrases-inline .phrase-card span { font-size: 15px; }
+}
