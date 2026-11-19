@@ -21,22 +21,28 @@
     if (Array.isArray(stored)) history = stored.filter(item => item && typeof item.en === "string" && typeof item.hi === "string").slice(0, 60);
   } catch (_) {}
   let result = "";
-  const views = ["translate", "history", "phrases", "about", "settings", "help"];
+  const views = ["translate", "history", "about", "settings", "help"];
   const show = (name) => {
-    if (!views.includes(name)) return;
+    const jumpToPhrases = name === "phrases";
+    const currentView = jumpToPhrases ? "translate" : name;
+    if (!views.includes(currentView)) return;
     views.forEach(view => {
-      const panel = $("view-" + view);
-      panel.classList.toggle("active", view === name);
+      $("view-" + view).classList.toggle("active", view === currentView);
     });
     document.querySelectorAll("[data-view]").forEach(el => {
-      const active = el.dataset.view === name;
+      const active = jumpToPhrases ? el.dataset.view === "phrases" : el.dataset.view === currentView;
       el.classList.toggle("active", active);
       if (el.classList.contains("tab")) el.setAttribute("aria-current", active ? "page" : "false");
     });
-    $("page-title").textContent = name === "translate" ? "Translate with Saarthi" : name === "phrases" ? "Quick Phrases" : name.charAt(0).toUpperCase() + name.slice(1);
+    $("page-title").textContent = currentView === "translate" ? "Translate with Saarthi" : currentView.charAt(0).toUpperCase() + currentView.slice(1);
     $("sidebar").classList.remove("open");
     $("backdrop").classList.add("hidden");
-    if (name === "history") renderHistory();
+    if (currentView === "history") renderHistory();
+    if (jumpToPhrases) {
+      $("quick-phrases").scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo(0, 0);
+    }
   };
   const notify = message => { $("translation-notice").textContent = message; };
   const clearResult = () => {
