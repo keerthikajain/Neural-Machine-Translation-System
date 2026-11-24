@@ -1,0 +1,14 @@
+{
+  "name": "saarthi-frontend",
+  "private": true,
+  "scripts": {
+    "build": "esbuild saarthi_app/app.jsx --bundle --minify --jsx=automatic --target=es2020 --outfile=saarthi_app/static/app.js"
+  },
+  "dependencies": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  }
+}

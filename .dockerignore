@@ -1,0 +1,15 @@
+**
+!Dockerfile
+!package.json
+!package-lock.json
+!requirements-app.txt
+!saarthi_app/
+!saarthi_app/*.py
+!saarthi_app/app.jsx
+!saarthi_app/index.html
+!saarthi_app/styles.css
+!public/
+!public/illustrations/
+!public/illustrations/desktop-landscape-fixed(1).png
+!public/illustrations/saarthi-logo.svg
+!public/illustrations/splash-landscape.png

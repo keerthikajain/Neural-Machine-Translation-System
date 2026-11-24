@@ -2,10 +2,10 @@
 
 ## Ready for local demonstration
 
-- The restored interface follows the Saarthi mockups with the original logo and purple skyline, a desktop sidebar, a Quick Phrases panel, and mobile bottom navigation.
+- The React interface preserves the original logo and translucent purple skyline, with a desktop sidebar, one Quick Phrases page, and mobile bottom navigation.
 - English → Hindi runs on CPU with the existing pinned IndicTrans2 INT8 model. The custom Saarthi Compact A remains separately documented as experimental.
 - Quick Phrases fills the English field. History can be searched and cleared. Settings enables optional browser persistence for up to 30 translations.
-- Research code, checkpoint lineage, and original artwork are preserved. The changes are local and uncommitted.
+- The restoration is committed on the local `feature/saarthi-v1-react-verified` branch, based on draft PR #5. Build the frontend before startup using the [README](README.md).
 
 ## Verification and open items
 

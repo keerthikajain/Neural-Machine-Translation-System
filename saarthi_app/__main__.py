@@ -9,9 +9,11 @@ from pathlib import Path
 from .model import INDIC_MODEL_DIR, MAX_CHARS, ROOT, IndicTranslator, InputTooLong, ModelUnavailable
 
 MAX_BODY = 16_384
+FRONTEND_BUNDLE = "saarthi_app/static/app.js"
+FRONTEND_BUILD_HINT = "Build the React frontend from the project root with npm ci, then npm run build."
 ASSETS = {
     "/": ("saarthi_app/index.html", "text/html; charset=utf-8"),
-    "/app.js": ("saarthi_app/app.js", "text/javascript; charset=utf-8"),
+    "/app.js": (FRONTEND_BUNDLE, "text/javascript; charset=utf-8"),
     "/styles.css": ("saarthi_app/styles.css", "text/css; charset=utf-8"),
     "/skyline-desktop.png": ("public/illustrations/desktop-landscape-fixed(1).png", "image/png"),
     "/skyline-mobile.png": ("public/illustrations/splash-landscape.png", "image/png"),
@@ -43,6 +45,9 @@ def create_server(address, translator):
                 self.send_json(404, error="Page not found.")
                 return
             path, kind = asset
+            if path == FRONTEND_BUNDLE and not (ROOT / path).is_file():
+                self.send_json(503, error=FRONTEND_BUILD_HINT)
+                return
             self.send_payload(200, kind, (ROOT / path).read_bytes())
 
         def do_POST(self):
@@ -99,6 +104,8 @@ def main():
     parser.add_argument("--port", default=8000, type=int)
     parser.add_argument("--model-dir", default=INDIC_MODEL_DIR, type=Path)
     args = parser.parse_args()
+    if not (ROOT / FRONTEND_BUNDLE).is_file():
+        parser.error(FRONTEND_BUILD_HINT)
     with create_server((args.host, args.port), IndicTranslator(args.model_dir)) as server:
         print(f"Saarthi is running at http://{args.host}:{server.server_port}", flush=True)
         try:

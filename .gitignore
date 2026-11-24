@@ -92,3 +92,6 @@ dist/
 # Local demo artifacts
 *.safetensors
 evaluation/private/
+
+# React frontend build
+/saarthi_app/static/
