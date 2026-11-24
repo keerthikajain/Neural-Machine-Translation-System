@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saarthi | English to Hindi</title>
+  <link rel="icon" href="/logo.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-translate" viewBox="0 0 24 24"><path d="M3 4h10a2 2 0 0 1 2 2v5M3 4a1 1 0 0 0-1 1v9a2 2 0 0 0 2 2h5l3 3v-3m-7-3 3-6 3 6m-5-2h4m4 1h8m-4-3v3m-3 3c1.5 2.5 3.5 4 6 5m-1-8c-1 4-3 6-6 8"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 2.6 6.4M3 5v7h7m2-5v5l3 2"/></symbol>
+    <symbol id="i-phrases" viewBox="0 0 24 24"><path d="M3 5h7l2 2 2-2h7v14h-7l-2 2-2-2H3zm9 2v14M6 9h3m-3 4h3m6-4h3m-3 4h3"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m10 3-1 3-2 1-3-.5L2.5 9l2 2v2l-2 2L4 17.5l3-.5 2 1 1 3h4l1-3 2-1 3 .5 1.5-2.5-2-2v-2l2-2L20 6.5l-3 .5-2-1-1-3z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4zm0 0L11 13"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+  </svg>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="sidebar-brand" href="#translate-view"><img src="/logo.svg" alt="" width="38" height="38">Saarthi</a>
+      <nav class="navigation" aria-label="Main navigation">
+        <a href="#translate-view" aria-current="page"><svg aria-hidden="true"><use href="#i-translate"/></svg>Translate</a>
+        <a href="#history-view"><svg aria-hidden="true"><use href="#i-history"/></svg>History</a>
+        <a href="#phrases-view"><svg aria-hidden="true"><use href="#i-phrases"/></svg>Quick Phrases</a>
+        <a href="#settings-view"><svg aria-hidden="true"><use href="#i-settings"/></svg>Settings</a>
+      </nav>
+      <p class="sidebar-note">Runs on your device</p>
+    </aside>
+    <main id="main" tabindex="-1">
+      <header class="masthead">
+        <div class="masthead-brand">
+          <img src="/logo.svg" alt="" width="64" height="64">
+          <div><span class="wordmark">Saarthi</span><p>Bridging languages, building connections.</p></div>
+        </div>
+      </header>
+      <section id="translate-view" class="view" aria-labelledby="translate-heading">
+        <div class="dashboard">
+          <div>
+            <h1 id="translate-heading" tabindex="-1">Translate</h1>
+            <form id="translator" novalidate>
+              <div class="direction" aria-label="Translation direction">
+                <span class="language"><span class="language-mark" aria-hidden="true">EN</span><span><strong>English</strong><small>Source</small></span></span>
+                <svg class="direction-arrow" role="img" aria-label="to"><use href="#i-arrow"/></svg>
+                <span class="language"><span class="language-mark" lang="hi" aria-hidden="true">हि</span><span><strong>Hindi</strong><small>Target</small></span></span>
+              </div>
+              <div class="panels">
+                <section class="source card">
+                  <div class="panel-header"><label for="source">English text</label><button id="clear" class="quiet" type="button">Clear</button></div>
+                  <textarea id="source" name="text" maxlength="1200" spellcheck="true" placeholder="Type or paste your text here" aria-describedby="count" required></textarea>
+                  <span id="count" class="count">0 / 1,200</span>
+                </section>
+                <button class="primary" id="translate" type="submit"><svg aria-hidden="true"><use href="#i-send"/></svg><span>Translate</span></button>
+                <section class="target card" aria-labelledby="target-label" aria-busy="false">
+                  <div class="panel-header"><h2 id="target-label">Hindi translation</h2><button id="copy" class="quiet" type="button" disabled><svg aria-hidden="true"><use href="#i-copy"/></svg>Copy</button></div>
+                  <div id="output" class="translation" lang="hi" tabindex="0" hidden></div>
+                  <div id="placeholder" class="placeholder"><svg aria-hidden="true"><use href="#i-translate"/></svg><p>Your Hindi translation will appear here.</p></div>
+                </section>
+              </div>
+              <p id="status" role="status"></p>
+            </form>
+            <details class="model-info card">
+              <summary>About the models</summary>
+              <dl>
+                <dt>Demo translator</dt>
+                <dd>AI4Bharat IndicTrans2 English–Hindi, using a CPU INT8 conversion by zaidwhys. Runs locally.</dd>
+                <dt>Experimental Saarthi Transformer</dt>
+                <dd>Our separately trained Compact A research model. Its checkpoints and results are documented in the repository.</dd>
+              </dl>
+            </details>
+          </div>
+          <aside class="dashboard-aside" aria-label="Translation shortcuts">
+            <section class="card side-card" aria-labelledby="quick-heading">
+              <div class="side-heading"><h2 id="quick-heading">Quick Phrases</h2><a href="#phrases-view">See all <span aria-hidden="true">→</span></a></div>
+              <ul id="quick-preview" class="phrase-list"></ul>
+            </section>
+            <section class="card side-card" aria-labelledby="recent-heading">
+              <div class="side-heading"><h2 id="recent-heading">Recent Translations</h2><a href="#history-view">See all <span aria-hidden="true">→</span></a></div>
+              <ul id="recent-list" class="history-list"></ul>
+              <p id="recent-empty" class="empty">Your recent translations will appear here.</p>
+            </section>
+          </aside>
+        </div>
+      </section>
+      <section id="history-view" class="view" aria-labelledby="history-heading" hidden>
+        <h1 id="history-heading" tabindex="-1">Translation History</h1>
+        <div class="card feature-card">
+          <div class="history-tools">
+            <label>Search history <input id="history-search" type="search" placeholder="Search English or Hindi"></label>
+            <button id="history-clear" class="quiet" type="button" disabled>Clear history</button>
+          </div>
+          <div id="history-confirm" class="confirm" hidden>
+            <p>Remove all translations from this browser’s history?</p>
+            <button id="history-delete" class="quiet" type="button">Remove all</button>
+            <button id="history-cancel" class="quiet" type="button">Cancel</button>
+          </div>
+          <ul id="history-list" class="history-list"></ul>
+          <p id="history-empty" class="empty" role="status"></p>
+        </div>
+      </section>
+      <section id="phrases-view" class="view" aria-labelledby="phrases-heading" hidden>
+        <h1 id="phrases-heading" tabindex="-1">Quick Phrases</h1>
+        <p class="view-intro">Choose a phrase to fill the English input.</p>
+        <div class="card feature-card"><ul id="phrase-list" class="phrase-list"></ul></div>
+      </section>
+      <section id="settings-view" class="view" aria-labelledby="settings-heading" hidden>
+        <h1 id="settings-heading" tabindex="-1">Settings</h1>
+        <div class="card feature-card settings-card">
+          <h2>Translation history</h2>
+          <p id="history-setting-help">History lasts until you reload or close this tab by default. Enable saving to keep up to 30 translations in this browser across visits. Turning it off removes the saved copy.</p>
+          <label class="setting"><input id="save-history" type="checkbox" aria-describedby="history-setting-help"> Save history in this browser</label>
+          <p id="settings-status" role="status" hidden></p>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

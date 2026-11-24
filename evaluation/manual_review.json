@@ -1,0 +1,47 @@
+{
+  "rubric": "One reviewer assessed whether the required facts were preserved, including identity, numeric value and event or relation. Minor grammatical and register differences pass. This is a project review, not a blinded independent human benchmark.",
+  "smoke_20": {
+    "opus": {
+      "pass_ids": [
+        "simple-01",
+        "simple-03",
+        "simple-05",
+        "number-03",
+        "number-05"
+      ],
+      "total": 20
+    },
+    "indic": {
+      "failures": {
+        "name-02": "School trip became going to school.",
+        "long-02": "The Hindi uses बुलाने for calling the clinic, changing or obscuring the intended telephone instruction."
+      },
+      "passes": 18,
+      "total": 20
+    }
+  },
+  "indic_contrasts": {
+    "passes_by_category": {
+      "name": 14,
+      "number": 13,
+      "meaning": 14
+    },
+    "total": 42,
+    "automatic_false_negatives": [
+      "name-02-a",
+      "name-02-b",
+      "number-08-a",
+      "number-08-b",
+      "number-10-a",
+      "number-10-b",
+      "meaning-18-a"
+    ],
+    "verified_failure": {
+      "number-09-a": "4.2 kilometres became 4 kilometres."
+    },
+    "borderline_notes": [
+      "Dawn becomes morning in the gate pair. The reviewed opening/closing contrast and event context are preserved.",
+      "The train pair narrows a general delay to late departure, while preserving the named origin and delay."
+    ]
+  }
+}

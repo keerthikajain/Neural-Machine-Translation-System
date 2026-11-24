@@ -1,0 +1,978 @@
+[
+  {
+    "id": "name-01-a",
+    "group": 1,
+    "category": "name",
+    "en": "Meera repaired the radio.",
+    "hi": "मीरा ने रेडियो ठीक किया।",
+    "expected": [
+      "मीरा"
+    ],
+    "opposing": [
+      "कविता"
+    ],
+    "context": [
+      [
+        "रेडियो"
+      ]
+    ]
+  },
+  {
+    "id": "name-01-b",
+    "group": 1,
+    "category": "name",
+    "en": "Kavita repaired the radio.",
+    "hi": "कविता ने रेडियो ठीक किया।",
+    "expected": [
+      "कविता"
+    ],
+    "opposing": [
+      "मीरा"
+    ],
+    "context": [
+      [
+        "रेडियो"
+      ]
+    ]
+  },
+  {
+    "id": "name-02-a",
+    "group": 2,
+    "category": "name",
+    "en": "Arjun forgot his umbrella at the station.",
+    "hi": "अर्जुन स्टेशन पर अपना छाता भूल गया।",
+    "expected": [
+      "अर्जुन"
+    ],
+    "opposing": [
+      "रोहन"
+    ],
+    "context": [
+      [
+        "छाता"
+      ]
+    ]
+  },
+  {
+    "id": "name-02-b",
+    "group": 2,
+    "category": "name",
+    "en": "Rohan forgot his umbrella at the station.",
+    "hi": "रोहन स्टेशन पर अपना छाता भूल गया।",
+    "expected": [
+      "रोहन"
+    ],
+    "opposing": [
+      "अर्जुन"
+    ],
+    "context": [
+      [
+        "छाता"
+      ]
+    ]
+  },
+  {
+    "id": "name-03-a",
+    "group": 3,
+    "category": "name",
+    "en": "The parcel was sent to Jaipur.",
+    "hi": "पार्सल जयपुर भेजा गया।",
+    "expected": [
+      "जयपुर"
+    ],
+    "opposing": [
+      "सूरत",
+      "सुरत"
+    ],
+    "context": [
+      [
+        "पार्सल",
+        "डाक",
+        "पैकेट"
+      ]
+    ]
+  },
+  {
+    "id": "name-03-b",
+    "group": 3,
+    "category": "name",
+    "en": "The parcel was sent to Surat.",
+    "hi": "पार्सल सूरत भेजा गया।",
+    "expected": [
+      "सूरत",
+      "सुरत"
+    ],
+    "opposing": [
+      "जयपुर"
+    ],
+    "context": [
+      [
+        "पार्सल",
+        "डाक",
+        "पैकेट"
+      ]
+    ]
+  },
+  {
+    "id": "name-04-a",
+    "group": 4,
+    "category": "name",
+    "en": "The delegation arrived in Nepal on Monday.",
+    "hi": "प्रतिनिधिमंडल सोमवार को नेपाल पहुँचा।",
+    "expected": [
+      "नेपाल"
+    ],
+    "opposing": [
+      "भूटान",
+      "भुतान"
+    ],
+    "context": [
+      [
+        "प्रतिनिधिमंडल",
+        "प्रतिनिधि",
+        "शिष्टमंडल",
+        "दल"
+      ]
+    ]
+  },
+  {
+    "id": "name-04-b",
+    "group": 4,
+    "category": "name",
+    "en": "The delegation arrived in Bhutan on Monday.",
+    "hi": "प्रतिनिधिमंडल सोमवार को भूटान पहुँचा।",
+    "expected": [
+      "भूटान",
+      "भुतान"
+    ],
+    "opposing": [
+      "नेपाल"
+    ],
+    "context": [
+      [
+        "प्रतिनिधिमंडल",
+        "प्रतिनिधि",
+        "शिष्टमंडल",
+        "दल"
+      ]
+    ]
+  },
+  {
+    "id": "name-05-a",
+    "group": 5,
+    "category": "name",
+    "en": "The teacher asked Nisha to read the last paragraph.",
+    "hi": "शिक्षक ने निशा से अंतिम अनुच्छेद पढ़ने को कहा।",
+    "expected": [
+      "निशा"
+    ],
+    "opposing": [
+      "पूजा"
+    ],
+    "context": [
+      [
+        "अनुच्छेद",
+        "पैराग्राफ",
+        "पैराग्राफ़"
+      ]
+    ]
+  },
+  {
+    "id": "name-05-b",
+    "group": 5,
+    "category": "name",
+    "en": "The teacher asked Pooja to read the last paragraph.",
+    "hi": "शिक्षक ने पूजा से अंतिम अनुच्छेद पढ़ने को कहा।",
+    "expected": [
+      "पूजा"
+    ],
+    "opposing": [
+      "निशा"
+    ],
+    "context": [
+      [
+        "अनुच्छेद",
+        "पैराग्राफ",
+        "पैराग्राफ़"
+      ]
+    ]
+  },
+  {
+    "id": "name-06-a",
+    "group": 6,
+    "category": "name",
+    "en": "The documentary follows the Narmada from its source to the sea.",
+    "hi": "वृत्तचित्र नर्मदा की यात्रा उसके उद्गम से समुद्र तक दिखाता है।",
+    "expected": [
+      "नर्मदा"
+    ],
+    "opposing": [
+      "गोदावरी"
+    ],
+    "context": [
+      [
+        "समुद्र",
+        "सागर"
+      ]
+    ]
+  },
+  {
+    "id": "name-06-b",
+    "group": 6,
+    "category": "name",
+    "en": "The documentary follows the Godavari from its source to the sea.",
+    "hi": "वृत्तचित्र गोदावरी की यात्रा उसके उद्गम से समुद्र तक दिखाता है।",
+    "expected": [
+      "गोदावरी"
+    ],
+    "opposing": [
+      "नर्मदा"
+    ],
+    "context": [
+      [
+        "समुद्र",
+        "सागर"
+      ]
+    ]
+  },
+  {
+    "id": "name-07-a",
+    "group": 7,
+    "category": "name",
+    "en": "The final train from Lucknow was delayed.",
+    "hi": "लखनऊ से आने वाली आखिरी ट्रेन देर से चली।",
+    "expected": [
+      "लखनऊ"
+    ],
+    "opposing": [
+      "कानपुर"
+    ],
+    "context": [
+      [
+        "ट्रेन",
+        "गाड़ी",
+        "रेल"
+      ]
+    ]
+  },
+  {
+    "id": "name-07-b",
+    "group": 7,
+    "category": "name",
+    "en": "The final train from Kanpur was delayed.",
+    "hi": "कानपुर से आने वाली आखिरी ट्रेन देर से चली।",
+    "expected": [
+      "कानपुर"
+    ],
+    "opposing": [
+      "लखनऊ"
+    ],
+    "context": [
+      [
+        "ट्रेन",
+        "गाड़ी",
+        "रेल"
+      ]
+    ]
+  },
+  {
+    "id": "number-08-a",
+    "group": 8,
+    "category": "number",
+    "en": "Exactly 18 workers attended the safety briefing.",
+    "hi": "सुरक्षा ब्रीफिंग में ठीक 18 कर्मचारी शामिल हुए।",
+    "expected": [
+      "18",
+      "अठारह"
+    ],
+    "opposing": [
+      "27",
+      "सत्ताईस",
+      "सताईस"
+    ],
+    "context": [
+      [
+        "कर्मचारी",
+        "कामगार",
+        "श्रमिक",
+        "मज़दूर",
+        "मजदूर"
+      ]
+    ]
+  },
+  {
+    "id": "number-08-b",
+    "group": 8,
+    "category": "number",
+    "en": "Exactly 27 workers attended the safety briefing.",
+    "hi": "सुरक्षा ब्रीफिंग में ठीक 27 कर्मचारी शामिल हुए।",
+    "expected": [
+      "27",
+      "सत्ताईस",
+      "सताईस"
+    ],
+    "opposing": [
+      "18",
+      "अठारह"
+    ],
+    "context": [
+      [
+        "कर्मचारी",
+        "कामगार",
+        "श्रमिक",
+        "मज़दूर",
+        "मजदूर"
+      ]
+    ]
+  },
+  {
+    "id": "number-09-a",
+    "group": 9,
+    "category": "number",
+    "en": "The bridge is 4.2 kilometres long.",
+    "hi": "पुल 4.2 किलोमीटर लंबा है।",
+    "expected": [
+      "4.2"
+    ],
+    "opposing": [
+      "6.8"
+    ],
+    "context": [
+      [
+        "पुल",
+        "सेतु"
+      ],
+      [
+        "किलोमीटर",
+        "किमी"
+      ]
+    ]
+  },
+  {
+    "id": "number-09-b",
+    "group": 9,
+    "category": "number",
+    "en": "The bridge is 6.8 kilometres long.",
+    "hi": "पुल 6.8 किलोमीटर लंबा है।",
+    "expected": [
+      "6.8"
+    ],
+    "opposing": [
+      "4.2"
+    ],
+    "context": [
+      [
+        "पुल",
+        "सेतु"
+      ],
+      [
+        "किलोमीटर",
+        "किमी"
+      ]
+    ]
+  },
+  {
+    "id": "number-10-a",
+    "group": 10,
+    "category": "number",
+    "en": "The archive opened to the public in 1998.",
+    "hi": "अभिलेखागार 1998 में जनता के लिए खोला गया।",
+    "expected": [
+      "1998"
+    ],
+    "opposing": [
+      "2006"
+    ],
+    "context": [
+      [
+        "अभिलेखागार",
+        "संग्रहालय",
+        "आर्काइव"
+      ]
+    ]
+  },
+  {
+    "id": "number-10-b",
+    "group": 10,
+    "category": "number",
+    "en": "The archive opened to the public in 2006.",
+    "hi": "अभिलेखागार 2006 में जनता के लिए खोला गया।",
+    "expected": [
+      "2006"
+    ],
+    "opposing": [
+      "1998"
+    ],
+    "context": [
+      [
+        "अभिलेखागार",
+        "संग्रहालय",
+        "आर्काइव"
+      ]
+    ]
+  },
+  {
+    "id": "number-11-a",
+    "group": 11,
+    "category": "number",
+    "en": "The patient waited for 45 minutes.",
+    "hi": "मरीज़ ने 45 मिनट इंतज़ार किया।",
+    "expected": [
+      "45",
+      "पैंतालीस",
+      "पैंतालिस"
+    ],
+    "opposing": [
+      "70",
+      "सत्तर"
+    ],
+    "context": [
+      [
+        "मरीज़",
+        "मरीज",
+        "रोगी"
+      ],
+      [
+        "मिनट"
+      ]
+    ]
+  },
+  {
+    "id": "number-11-b",
+    "group": 11,
+    "category": "number",
+    "en": "The patient waited for 70 minutes.",
+    "hi": "मरीज़ ने 70 मिनट इंतज़ार किया।",
+    "expected": [
+      "70",
+      "सत्तर"
+    ],
+    "opposing": [
+      "45",
+      "पैंतालीस",
+      "पैंतालिस"
+    ],
+    "context": [
+      [
+        "मरीज़",
+        "मरीज",
+        "रोगी"
+      ],
+      [
+        "मिनट"
+      ]
+    ]
+  },
+  {
+    "id": "number-12-a",
+    "group": 12,
+    "category": "number",
+    "en": "The gardener bought 12 mango saplings.",
+    "hi": "माली ने आम के 12 पौधे खरीदे।",
+    "expected": [
+      "12",
+      "बारह"
+    ],
+    "opposing": [
+      "16",
+      "सोलह"
+    ],
+    "context": [
+      [
+        "आम"
+      ],
+      [
+        "पौधे",
+        "पौधा"
+      ]
+    ]
+  },
+  {
+    "id": "number-12-b",
+    "group": 12,
+    "category": "number",
+    "en": "The gardener bought 16 mango saplings.",
+    "hi": "माली ने आम के 16 पौधे खरीदे।",
+    "expected": [
+      "16",
+      "सोलह"
+    ],
+    "opposing": [
+      "12",
+      "बारह"
+    ],
+    "context": [
+      [
+        "आम"
+      ],
+      [
+        "पौधे",
+        "पौधा"
+      ]
+    ]
+  },
+  {
+    "id": "number-13-a",
+    "group": 13,
+    "category": "number",
+    "en": "The ticket cost 240 rupees per person.",
+    "hi": "टिकट की कीमत प्रति व्यक्ति 240 रुपये थी।",
+    "expected": [
+      "240",
+      "दो सौ चालीस"
+    ],
+    "opposing": [
+      "360",
+      "तीन सौ साठ"
+    ],
+    "context": [
+      [
+        "टिकट"
+      ],
+      [
+        "रुपये",
+        "रुपए",
+        "रुपया"
+      ]
+    ]
+  },
+  {
+    "id": "number-13-b",
+    "group": 13,
+    "category": "number",
+    "en": "The ticket cost 360 rupees per person.",
+    "hi": "टिकट की कीमत प्रति व्यक्ति 360 रुपये थी।",
+    "expected": [
+      "360",
+      "तीन सौ साठ"
+    ],
+    "opposing": [
+      "240",
+      "दो सौ चालीस"
+    ],
+    "context": [
+      [
+        "टिकट"
+      ],
+      [
+        "रुपये",
+        "रुपए",
+        "रुपया"
+      ]
+    ]
+  },
+  {
+    "id": "number-14-a",
+    "group": 14,
+    "category": "number",
+    "en": "Humidity fell to 35 percent by noon.",
+    "hi": "दोपहर तक आर्द्रता घटकर 35 प्रतिशत रह गई।",
+    "expected": [
+      "35",
+      "पैंतीस"
+    ],
+    "opposing": [
+      "55",
+      "पचपन"
+    ],
+    "context": [
+      [
+        "आर्द्रता",
+        "नमी"
+      ]
+    ]
+  },
+  {
+    "id": "number-14-b",
+    "group": 14,
+    "category": "number",
+    "en": "Humidity fell to 55 percent by noon.",
+    "hi": "दोपहर तक आर्द्रता घटकर 55 प्रतिशत रह गई।",
+    "expected": [
+      "55",
+      "पचपन"
+    ],
+    "opposing": [
+      "35",
+      "पैंतीस"
+    ],
+    "context": [
+      [
+        "आर्द्रता",
+        "नमी"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-15-a",
+    "group": 15,
+    "category": "meaning",
+    "en": "The cashier opened the side gate at dawn.",
+    "hi": "कैशियर ने भोर में बगल का फाटक खोला।",
+    "expected": [
+      "खोला",
+      "खोल दिया"
+    ],
+    "opposing": [
+      "बंद",
+      "बन्द"
+    ],
+    "context": [
+      [
+        "फाटक",
+        "द्वार",
+        "दरवाज़ा",
+        "दरवाजा",
+        "गेट"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-15-b",
+    "group": 15,
+    "category": "meaning",
+    "en": "The cashier closed the side gate at dawn.",
+    "hi": "कैशियर ने भोर में बगल का फाटक बंद किया।",
+    "expected": [
+      "बंद",
+      "बन्द"
+    ],
+    "opposing": [
+      "खोला",
+      "खोल दिया"
+    ],
+    "context": [
+      [
+        "फाटक",
+        "द्वार",
+        "दरवाज़ा",
+        "दरवाजा",
+        "गेट"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-16-a",
+    "group": 16,
+    "category": "meaning",
+    "en": "The village team won the final match.",
+    "hi": "गाँव की टीम ने अंतिम मैच जीता।",
+    "expected": [
+      "जीता",
+      "जीत",
+      "विजयी"
+    ],
+    "opposing": [
+      "हार",
+      "हारी",
+      "हारा",
+      "पराजित"
+    ],
+    "context": [
+      [
+        "मैच",
+        "मुकाबला",
+        "खेल"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-16-b",
+    "group": 16,
+    "category": "meaning",
+    "en": "The village team lost the final match.",
+    "hi": "गाँव की टीम अंतिम मैच हार गई।",
+    "expected": [
+      "हार",
+      "हारी",
+      "हारा",
+      "पराजित"
+    ],
+    "opposing": [
+      "जीता",
+      "जीत",
+      "विजयी"
+    ],
+    "context": [
+      [
+        "मैच",
+        "मुकाबला",
+        "खेल"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-17-a",
+    "group": 17,
+    "category": "meaning",
+    "en": "The temperature stayed above freezing overnight.",
+    "hi": "रात भर तापमान हिमांक से ऊपर रहा।",
+    "expected": [
+      "ऊपर",
+      "अधिक",
+      "ज्यादा",
+      "ज़्यादा"
+    ],
+    "opposing": [
+      "नीचे",
+      "कम"
+    ],
+    "context": [
+      [
+        "तापमान"
+      ],
+      [
+        "हिमांक",
+        "जमाव",
+        "जमने"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-17-b",
+    "group": 17,
+    "category": "meaning",
+    "en": "The temperature stayed below freezing overnight.",
+    "hi": "रात भर तापमान हिमांक से नीचे रहा।",
+    "expected": [
+      "नीचे",
+      "कम"
+    ],
+    "opposing": [
+      "ऊपर",
+      "अधिक",
+      "ज्यादा",
+      "ज़्यादा"
+    ],
+    "context": [
+      [
+        "तापमान"
+      ],
+      [
+        "हिमांक",
+        "जमाव",
+        "जमने"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-18-a",
+    "group": 18,
+    "category": "meaning",
+    "en": "The council approved the revised budget.",
+    "hi": "परिषद ने संशोधित बजट मंज़ूर किया।",
+    "expected": [
+      "मंज़ूर",
+      "मंजूर",
+      "स्वीकृत",
+      "स्वीकार",
+      "अनुमोदित"
+    ],
+    "opposing": [
+      "खारिज",
+      "अस्वीकार",
+      "नामंजूर",
+      "नामंज़ूर"
+    ],
+    "context": [
+      [
+        "बजट"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-18-b",
+    "group": 18,
+    "category": "meaning",
+    "en": "The council rejected the revised budget.",
+    "hi": "परिषद ने संशोधित बजट खारिज किया।",
+    "expected": [
+      "खारिज",
+      "अस्वीकार",
+      "नामंजूर",
+      "नामंज़ूर"
+    ],
+    "opposing": [
+      "मंज़ूर",
+      "मंजूर",
+      "स्वीकृत",
+      "स्वीकार",
+      "अनुमोदित"
+    ],
+    "context": [
+      [
+        "बजट"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-19-a",
+    "group": 19,
+    "category": "meaning",
+    "en": "The farmer bought a pump at the market.",
+    "hi": "किसान ने बाज़ार में एक पंप खरीदा।",
+    "expected": [
+      "खरीदा",
+      "ख़रीदा",
+      "खरीद",
+      "ख़रीद",
+      "क्रय"
+    ],
+    "opposing": [
+      "बेचा",
+      "बेच",
+      "बिक्री",
+      "विक्रय"
+    ],
+    "context": [
+      [
+        "पंप",
+        "पम्प"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-19-b",
+    "group": 19,
+    "category": "meaning",
+    "en": "The farmer sold a pump at the market.",
+    "hi": "किसान ने बाज़ार में एक पंप बेचा।",
+    "expected": [
+      "बेचा",
+      "बेच",
+      "बिक्री",
+      "विक्रय"
+    ],
+    "opposing": [
+      "खरीदा",
+      "ख़रीदा",
+      "खरीद",
+      "ख़रीद",
+      "क्रय"
+    ],
+    "context": [
+      [
+        "पंप",
+        "पम्प"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-20-a",
+    "group": 20,
+    "category": "meaning",
+    "en": "The courier called before the meeting.",
+    "hi": "कूरियर ने बैठक से पहले फ़ोन किया।",
+    "expected": [
+      "पहले",
+      "पूर्व"
+    ],
+    "opposing": [
+      "बाद",
+      "पश्चात"
+    ],
+    "context": [
+      [
+        "बैठक",
+        "मीटिंग"
+      ],
+      [
+        "फ़ोन",
+        "फोन",
+        "कॉल"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-20-b",
+    "group": 20,
+    "category": "meaning",
+    "en": "The courier called after the meeting.",
+    "hi": "कूरियर ने बैठक के बाद फ़ोन किया।",
+    "expected": [
+      "बाद",
+      "पश्चात"
+    ],
+    "opposing": [
+      "पहले",
+      "पूर्व"
+    ],
+    "context": [
+      [
+        "बैठक",
+        "मीटिंग"
+      ],
+      [
+        "फ़ोन",
+        "फोन",
+        "कॉल"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-21-a",
+    "group": 21,
+    "category": "meaning",
+    "en": "The northbound bus arrived at sunset.",
+    "hi": "उत्तर की ओर जाने वाली बस सूर्यास्त के समय पहुँची।",
+    "expected": [
+      "पहुँची",
+      "पहुंची",
+      "पहुँच",
+      "पहुंच",
+      "आगमन",
+      "आ गई",
+      "आई"
+    ],
+    "opposing": [
+      "रवाना",
+      "निकली",
+      "प्रस्थान",
+      "चली"
+    ],
+    "context": [
+      [
+        "बस"
+      ],
+      [
+        "सूर्यास्त",
+        "साँझ",
+        "सांझ",
+        "शाम"
+      ]
+    ]
+  },
+  {
+    "id": "meaning-21-b",
+    "group": 21,
+    "category": "meaning",
+    "en": "The northbound bus departed at sunset.",
+    "hi": "उत्तर की ओर जाने वाली बस सूर्यास्त के समय रवाना हुई।",
+    "expected": [
+      "रवाना",
+      "निकली",
+      "प्रस्थान",
+      "चली"
+    ],
+    "opposing": [
+      "पहुँची",
+      "पहुंची",
+      "पहुँच",
+      "पहुंच",
+      "आगमन",
+      "आ गई",
+      "आई"
+    ],
+    "context": [
+      [
+        "बस"
+      ],
+      [
+        "सूर्यास्त",
+        "साँझ",
+        "सांझ",
+        "शाम"
+      ]
+    ]
+  }
+]
