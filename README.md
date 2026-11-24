@@ -1,183 +1,46 @@
-#Saarthi - Neural Machine Translation System
+# Saarthi · English → Hindi Neural Machine Translation
 
-A complete English-to-Hindi Neural Machine Translation system built from scratch using Transformer architecture with PyTorch.
+Saarthi explores how to turn English text into useful Hindi and how to tell when a translation preserves the original meaning. One project connects three kinds of work: implementing a Transformer, evaluating a smaller model under compute constraints, and shipping a local translation application.
 
-## 🎯 Project Overview
+**For the OJT live demo, use Saarthi V1.** The app sends English text to a local Python server running AI4Bharat’s pretrained IndicTrans2 on CPU. Compact A and Mini are scratch-trained research models with separate checkpoints and evaluations.
 
-This project demonstrates the **complete AI/ML pipeline** for building a production-ready translation system:
+| Component | Original contribution | Status and location |
+|---|---|---|
+| **A · Saarthi Compact A** | Custom PyTorch Transformer, preprocessing, SentencePiece tokenization, training, checkpointing, and evaluation | Research implementation on `main` in `src/`. Repaired-corpus pilot received a NO-GO for translation use. [Compact A guide](docs/ojt/compact-a.md) |
+| **B · Saarthi Mini** | Smaller custom architecture, CPU training pilots, controlled learning-rate comparison, decoding diagnostics, and bilingual coverage audit | Experimental. Verified source and reports are on local Mini branches. [Mini guide](docs/ojt/mini.md) |
+| **C · Saarthi V1** | Purple desktop/mobile UI, local inference integration, translation history, Quick Phrases, and end-to-end browser verification | Working demo on `feature/saarthi-v1-app`, currently [draft PR #5](https://github.com/keerthikajain/Neural-Machine-Translation-System/pull/5). [V1 setup and demo](docs/ojt/v1-app.md) |
 
-- **Dataset Processing**: IIT Bombay English-Hindi Parallel Corpus (1.4M pairs)
-- **Tokenization**: SentencePiece BPE with 32K vocabulary
-- **Architecture**: Transformer encoder-decoder (93.3M parameters)  
-- **Training Pipeline**: Complete training framework with verification
-- **Evaluation**: BLEU scoring and translation quality assessment
-- **Documentation**: Comprehensive learning journey documentation
-
-## ✅ Current Status
-
-**🎉 COMPLETED: Training Pipeline Ready**
-
-- ✅ **Dataset Preparation**: 1,412,400 clean English-Hindi sentence pairs
-- ✅ **Tokenization**: SentencePiece trained and verified (32K vocabulary)
-- ✅ **Transformer Architecture**: Complete encoder-decoder implementation
-- ✅ **Training Pipeline**: AdamW optimizer, warmup scheduling, checkpointing
-- ✅ **Verification**: 28/28 comprehensive tests passed
-- ✅ **Documentation**: Complete learning journey documented
-
-**🚀 READY FOR**: Model training execution
-
-## 🏗️ Architecture
-
-**Transformer Model**:
-- **Size**: 93.3M parameters (~356MB)
-- **Architecture**: 6-layer encoder + 6-layer decoder
-- **Attention**: 8-head multi-head attention  
-- **Embedding**: 512-dimensional with positional encoding
-- **Vocabulary**: Shared 32K SentencePiece (English + Hindi)
-
-## 🚀 Quick Start
-
-### Prerequisites
-```bash
-Python 3.8+
-PyTorch 2.0+
-8GB+ RAM (for training)
+```mermaid
+flowchart TD
+    A["IIT Bombay parallel text"] --> B["Compact A research"]
+    C["Tatoeba parallel text"] --> D["Mini experiments"]
+    E["AI4Bharat IndicTrans2 weights"] --> F["Saarthi V1 app"]
 ```
 
-### Setup
-```bash
-# Clone repository
-git clone https://github.com/keerthikajain/Neural-Machine-Translation-System.git
-cd Neural-Machine-Translation-System
+### Working application
 
-# Install dependencies
-pip install -r requirements.txt
+The screenshots show the runnable revision in draft PR #5. The [app guide](docs/ojt/v1-app.md) explains the separately verified local React revision and which setup commands apply to each.
 
-# Download and prepare dataset (automatic)
-python -c "from src.data.dataset import create_validation_files; create_validation_files()"
-```
+![Saarthi V1 on desktop, translating an English train journey into Hindi](https://raw.githubusercontent.com/keerthikajain/Neural-Machine-Translation-System/f706501da5be18e126c636d5bfe92b34e669cef5/docs/screenshots/desktop.jpg)
 
-### Training
-```bash
-# Start training with student-friendly defaults
-python train_model.py
-```
+[Mobile screenshot](https://raw.githubusercontent.com/keerthikajain/Neural-Machine-Translation-System/f706501da5be18e126c636d5bfe92b34e669cef5/docs/screenshots/mobile.jpg) · [Installation and demo procedure](docs/ojt/v1-app.md)
 
-### Verification
-```bash
-# Run comprehensive verification tests
-python notebooks/training_pipeline_verification.py
+### What we measured
 
-# Test architecture components
-python notebooks/comprehensive_verification.py
-```
+| Model and evaluation | BLEU | chrF++ | Source-faithfulness evidence |
+|---|---:|---:|---|
+| Compact A repaired-corpus 3K pilot checkpoint, 520 IIT Bombay validation rows | 0.267 | 11.826 | 0/42 automated synthetic contrasts |
+| Mini Pilot 3 treatment, 203 distinct Tatoeba development sources | 1.84 | 16.14 | 0/203 exact matches. Number tokens preserved in 3/11 cases. Correct quantity with its referent in 0/11. |
+| IndicTrans2 INT8, 520 IIT Bombay validation rows | 23.210 | 49.674 | 34/42 automated synthetic contrasts. One manual review found a decimal error. |
 
-## 📊 Dataset Information
+BLEU and chrF++ compare generated text with reference translations. Mini used a different corpus and setup, so its scores cannot establish a ranking against the other runs. Possible overlap between IndicTrans2 pretraining and the IIT Bombay validation set remains unmeasured. See the component guides for decoding settings, comparison limits, and the research decisions.
 
-- **Source**: IIT Bombay English-Hindi Parallel Corpus
-- **Training**: 1,412,400 sentence pairs
-- **Validation**: 520 sentence pairs
-- **Test**: 2,507 sentence pairs
-- **Languages**: English → Hindi
-- **Quality**: Cleaned, deduplicated, no leakage
+### Stack, credits, and next work
 
-## 🔬 Verification Results
+- **Compact A** uses PyTorch, a custom encoder–decoder, and SentencePiece. The parallel corpus is credited to IIT Bombay CFILT. [IIT Bombay corpus and citation](https://www.cfilt.iitb.ac.in/iitb_parallel/)
+- **Mini** reuses the custom Transformer layers with smaller dimensions and a train-only SentencePiece tokenizer. Its pinned English–Hindi export credits Tatoeba contributors under CC BY 2.0 France. [Tatoeba data and attribution](https://tatoeba.org/en/downloads)
+- **V1** uses a local Python HTTP server, CTranslate2 INT8 CPU inference, and the original Saarthi browser interface. The published draft uses HTML, CSS, and JavaScript. The later local revision uses React with the same Python API. [AI4Bharat model](https://huggingface.co/ai4bharat/indictrans2-en-indic-dist-200M) · [Pinned CPU conversion](https://huggingface.co/zaidwhys/indictrans2-en-indic-dist-200M-ct2-int8/tree/abf8512c45febe9cc9fbb30ee781bb3be4f18956)
 
-**Training Pipeline**: ✅ **28/28 tests passed**
-- Dataset loading and tokenization ✅
-- Model architecture and attention ✅  
-- Training loop and optimization ✅
-- Loss function and gradient flow ✅
-- Checkpointing and evaluation ✅
+Finish the Windows launcher smoke test before V1 release sign-off. For Mini, complete the independent bilingual review and dataset curation gates before any training decision. Use bilingual source-faithfulness checks to guide future Compact A research. Private corpora, checkpoints, and sealed evaluation artifacts stay outside Git.
 
-**Architecture Verification**: ✅ **All components verified**
-- Cross-attention handles different sequence lengths
-- Gradient flow through all 93.3M parameters
-- Real tokenizer integration working
-
-## 📚 Documentation
-
-- **[Project Learning Log](docs/PROJECT_LEARNING_LOG.md)**: Complete development journey
-- **[Transformer Verification](docs/TRANSFORMER_VERIFICATION.md)**: Architecture verification report  
-- **[Training Pipeline Verification](docs/TRAINING_PIPELINE_VERIFICATION.md)**: Pre-training safety audit
-
-## 🛠️ Technology Stack
-
-- **Deep Learning**: PyTorch, Custom Transformer implementation
-- **NLP**: SentencePiece tokenization, BLEU evaluation
-- **Data Processing**: Custom dataset pipeline, Unicode normalization  
-- **Training**: AdamW optimizer, warmup scheduling, gradient clipping
-- **Verification**: Comprehensive testing framework
-- **Documentation**: Markdown with detailed implementation notes
-
-## 📁 Project Structure
-
-```
-src/
-├── model/                  # Transformer architecture
-│   ├── transformer.py     # Complete model implementation
-│   ├── attention.py       # Multi-head attention + FFN
-│   ├── encoder.py         # Transformer encoder  
-│   ├── decoder.py         # Transformer decoder
-│   └── embeddings.py      # Token + positional embeddings
-├── training/               # Training framework
-│   ├── trainer.py         # Training utilities and loops
-│   └── train_nmt.py       # Main training script
-├── data/                   # Dataset processing
-│   └── dataset.py         # PyTorch dataset and data loaders
-└── evaluation/             # Evaluation and inference
-    └── evaluator.py        # Translation and BLEU scoring
-
-notebooks/                  # Verification and testing
-├── comprehensive_verification.py      # Architecture testing
-├── training_pipeline_verification.py  # Pre-training audit
-└── test_training_pipeline.py         # Integration testing
-
-docs/                       # Complete documentation
-├── PROJECT_LEARNING_LOG.md           # Learning journey
-├── TRANSFORMER_VERIFICATION.md        # Architecture verification  
-└── TRAINING_PIPELINE_VERIFICATION.md  # Training safety audit
-
-train_model.py             # Simple training launcher
-```
-
-## 🎓 Learning Outcomes
-
-This project demonstrates:
-
-**Deep Learning Engineering**:
-- Transformer architecture implementation from scratch
-- Multi-head attention and encoder-decoder mechanisms
-- Custom training loops with proper optimization
-- Gradient flow verification and debugging
-
-**ML Pipeline Engineering**:
-- Large dataset processing and cleaning
-- Tokenization and vocabulary management  
-- Training pipeline design and verification
-- Checkpointing and model persistence
-
-**Software Engineering**:
-- Modular code architecture and testing
-- Comprehensive documentation and verification
-- Git workflow and project management
-- Production-ready code standards
-
-## 🔍 Key Implementation Highlights
-
-- **Cross-attention handling**: Supports different encoder/decoder sequence lengths
-- **Proper masking**: Causal masking for decoder + padding mask semantics
-- **Label smoothing**: Cross-entropy loss with smoothing for better generalization
-- **Learning rate scheduling**: Transformer-style warmup + inverse square root decay
-- **Memory efficiency**: Dynamic padding and batch processing
-- **Comprehensive testing**: 28-test verification suite ensuring technical correctness
-
-## 📈 Expected Training Performance
-
-**On CPU**: ~2-3 hours per epoch (5 epochs recommended)  
-**Memory usage**: ~1GB during training  
-**Model size**: 356MB (manageable for student hardware)
-
----
-
-**🏆 This project showcases a complete, production-ready neural machine translation pipeline with comprehensive verification and documentation - demonstrating advanced ML engineering skills.**
+[OJT presentation](docs/ojt/presentation.md) · [Viva notes](docs/ojt/viva.md) · [Verification report](docs/ojt/verification.md) · [Historical project write-up](https://github.com/keerthikajain/Neural-Machine-Translation-System/blob/febc34af7ab5ef63322f57df40a61fb73818185c/README.md)
