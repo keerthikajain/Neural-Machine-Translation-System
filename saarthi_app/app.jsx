@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 
+const apiOrigin = typeof SAARTHI_API_ORIGIN === "string" ? SAARTHI_API_ORIGIN : "";
+
 const pages = [
   { id: "translate-view", heading: "translate-heading", icon: "translate", label: "Translate" },
   { id: "history-view", heading: "history-heading", icon: "history", label: "History" },
@@ -330,21 +332,23 @@ function App() {
     setOutput("");
     announce("Translating…");
     try {
-      const response = await fetch("/api/translate", {
+      const response = await fetch(apiOrigin + "/api/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: sourceText }),
       });
       const result = await response.json();
-      if (!response.ok || typeof result.translation !== "string" || !result.translation) {
-        announce(result.error || "Translation failed. Try again.", true);
+      if (!response.ok || typeof result?.translation !== "string" || !result.translation) {
+        announce(result?.error || "Translation failed. Try again.", true);
         return;
       }
       setOutput(result.translation);
       const saved = history.add({ source: sourceText, translation: result.translation });
       announce(saved ? "Translation ready." : "Translation ready. History could not be saved.");
     } catch {
-      announce("Could not reach the local translator. Check that Saarthi is running and try again.", true);
+      announce(apiOrigin
+        ? "The translator may be starting up. Wait a moment and try again."
+        : "Could not reach the local translator. Check that Saarthi is running and try again.", true);
     } finally {
       inFlight.current = false;
       setBusy(false);

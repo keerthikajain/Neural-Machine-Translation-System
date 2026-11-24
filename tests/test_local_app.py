@@ -24,9 +24,11 @@ class FixtureTranslator:
 
 
 class HTTPTests(unittest.TestCase):
+    allowed_origin = "https://saarthi.example"
+
     @classmethod
     def setUpClass(cls):
-        cls.server = create_server(("127.0.0.1", 0), FixtureTranslator())
+        cls.server = create_server(("127.0.0.1", 0), FixtureTranslator(), {cls.allowed_origin})
         cls.url = f"http://127.0.0.1:{cls.server.server_port}"
         cls.thread = threading.Thread(target=cls.server.serve_forever)
         cls.thread.start()
@@ -58,6 +60,53 @@ class HTTPTests(unittest.TestCase):
         status, body = self.post(b'{"text":" Meera fixed the radio. "}')
         self.assertEqual(status, 200)
         self.assertEqual(body["translation"], "मीरा ने रेडियो ठीक किया।")
+
+    def test_health_does_not_require_inference(self):
+        with urlopen(self.url + "/healthz", timeout=4) as response:
+            self.assertEqual(response.status, 200)
+            self.assertEqual(json.load(response), {"status": "ok"})
+
+    def test_cors_preflight_and_translation(self):
+        headers = {
+            "Origin": self.allowed_origin,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        }
+        preflight = Request(self.url + "/api/translate", headers=headers, method="OPTIONS")
+        with urlopen(preflight, timeout=4) as response:
+            self.assertEqual(response.status, 204)
+            self.assertEqual(response.headers["Access-Control-Allow-Origin"], self.allowed_origin)
+            self.assertEqual(response.headers["Access-Control-Allow-Headers"], "Content-Type")
+        request = Request(self.url + "/api/translate", b'{"text":"Hello"}', {
+            "Content-Type": "application/json", "Origin": self.allowed_origin,
+        })
+        with urlopen(request, timeout=4) as response:
+            self.assertEqual(response.headers["Access-Control-Allow-Origin"], self.allowed_origin)
+            self.assertEqual(response.headers["Vary"], "Origin")
+            self.assertIn("translation", json.load(response))
+        request = Request(self.url + "/api/translate", b'{"text":"missing"}', {
+            "Content-Type": "application/json", "Origin": self.allowed_origin,
+        })
+        with self.assertRaises(HTTPError) as failure:
+            urlopen(request, timeout=4)
+        with failure.exception as response:
+            self.assertEqual(response.code, 503)
+            self.assertEqual(response.headers["Access-Control-Allow-Origin"], self.allowed_origin)
+
+    def test_cors_rejects_unlisted_origins_and_headers(self):
+        for origin, header in (("https://other.example", "content-type"), (self.allowed_origin, "authorization")):
+            request = Request(self.url + "/api/translate", headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": header,
+            }, method="OPTIONS")
+            with self.assertRaises(HTTPError) as failure:
+                urlopen(request, timeout=4)
+            with failure.exception as response:
+                self.assertEqual(response.code, 403)
+                self.assertIsNone(response.headers.get("Access-Control-Allow-Headers"))
+                if origin != self.allowed_origin:
+                    self.assertIsNone(response.headers.get("Access-Control-Allow-Origin"))
 
     def test_bad_input(self):
         for body in (b'{', b'{"text": 1}', b'{"text":" "}', b'[]', br'{"text":"\ud800"}'):
