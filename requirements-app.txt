@@ -1,0 +1,7 @@
+# Local CPU app and evaluation. Python 3.11 or 3.12.
+bhashantar==0.1.1
+ctranslate2==4.9.1
+huggingface-hub==0.36.2
+sacremoses==0.2.0
+sentencepiece==0.2.3
+sacrebleu==2.6.0

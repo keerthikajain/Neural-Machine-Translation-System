@@ -88,3 +88,7 @@ yarn-error.log*
 # React build
 build/
 dist/
+
+# Local demo artifacts
+*.safetensors
+evaluation/private/

@@ -1,183 +1,56 @@
-#Saarthi - Neural Machine Translation System
+# Saarthi
 
-A complete English-to-Hindi Neural Machine Translation system built from scratch using Transformer architecture with PyTorch.
+Saarthi translates English text into Hindi on your device. The working demo uses a pinned, pretrained **AI4Bharat IndicTrans2 distilled 200M** model with a CPU INT8 conversion. The separately trained **Saarthi Compact A** Transformer remains an experimental model in this repository.
 
-## 🎯 Project Overview
+![Saarthi translating an English passage into Hindi](docs/screenshots/desktop.jpg)
 
-This project demonstrates the **complete AI/ML pipeline** for building a production-ready translation system:
+[Mobile layout screenshot](docs/screenshots/mobile.jpg)
 
-- **Dataset Processing**: IIT Bombay English-Hindi Parallel Corpus (1.4M pairs)
-- **Tokenization**: SentencePiece BPE with 32K vocabulary
-- **Architecture**: Transformer encoder-decoder (93.3M parameters)  
-- **Training Pipeline**: Complete training framework with verification
-- **Evaluation**: BLEU scoring and translation quality assessment
-- **Documentation**: Comprehensive learning journey documentation
+The purple dashboard uses Saarthi’s original logo and skyline artwork, with a desktop sidebar and mobile bottom navigation. Quick Phrases fills the English input. Translation History is searchable in English and Hindi. It lasts until reload by default, and Settings can save up to 30 translations in the current browser.
 
-## ✅ Current Status
+## Run locally
 
-**🎉 COMPLETED: Training Pipeline Ready**
+Use Python 3.11 or 3.12 on a supported 64-bit CPU. Install the pinned app dependencies in a virtual environment. The one-time model setup downloads roughly 224 MB. Startup and inference use local files and require no API account.
 
-- ✅ **Dataset Preparation**: 1,412,400 clean English-Hindi sentence pairs
-- ✅ **Tokenization**: SentencePiece trained and verified (32K vocabulary)
-- ✅ **Transformer Architecture**: Complete encoder-decoder implementation
-- ✅ **Training Pipeline**: AdamW optimizer, warmup scheduling, checkpointing
-- ✅ **Verification**: 28/28 comprehensive tests passed
-- ✅ **Documentation**: Complete learning journey documented
-
-**🚀 READY FOR**: Model training execution
-
-## 🏗️ Architecture
-
-**Transformer Model**:
-- **Size**: 93.3M parameters (~356MB)
-- **Architecture**: 6-layer encoder + 6-layer decoder
-- **Attention**: 8-head multi-head attention  
-- **Embedding**: 512-dimensional with positional encoding
-- **Vocabulary**: Shared 32K SentencePiece (English + Hindi)
-
-## 🚀 Quick Start
-
-### Prerequisites
 ```bash
-Python 3.8+
-PyTorch 2.0+
-8GB+ RAM (for training)
+python -m venv .venv
+# Linux or macOS
+source .venv/bin/activate
+# Windows PowerShell instead
+# .\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements-app.txt
+python -m saarthi_app.setup_model
+python -m saarthi_app
 ```
 
-### Setup
+Open [localhost:8000](http://127.0.0.1:8000). The first translation loads the model and may take longer. You can also start it with `./run_demo.sh` or `.\run_demo.ps1`, or use `python -m saarthi_app --port 8080`. Ctrl+C stops the server. The app is intended for local use. The Windows launcher still needs a smoke test on Windows.
+
+Try **Anita took the train from Pune to Mumbai. The journey lasted 3 hours.** Saarthi produced **अनीता ने पुणे से मुंबई के लिए ट्रेन ली। यह यात्रा 3 घंटे तक चली।**
+
+## Evaluation
+
+| Model | BLEU ↑ | chrF++ ↑ | Automated source contrasts ↑ |
+|---|---:|---:|---:|
+| Custom Saarthi 20K | 0.345 | 10.956 | 0/42 |
+| Custom Saarthi 3K pilot best | 0.267 | 11.826 | 0/42 |
+| Custom Saarthi 5K pilot latest | 0.288 | 11.406 | 0/42 |
+| Helsinki-NLP OPUS-MT | 6.166 | 26.822 | 13/42 |
+| IndicTrans2 distilled 200M INT8 | **23.210** | **49.674** | **34/42** |
+
+Scores use the same 520 validation rows, greedy decoding with a 64-token cap, and SacreBLEU 2.6.0. Each model has its own tokenizer. A separate check of the interactive decoding settings found **18/20** examples preserved all reviewed facts. IndicTrans2 once translated 4.2 km as 4 km on the greedy synthetic contrast. Review names, numbers and instructions before reuse. Public pretraining may overlap with the validation set, so validation metrics do not establish an independent held-out benchmark.
+
+See [evaluation and reproduction](docs/evaluation.md), [architecture and model provenance](docs/architecture.md), [demo plan](docs/demo.md), and [project state](PROJECT_STATE.md).
+
+## Tests
+
 ```bash
-# Clone repository
-git clone https://github.com/keerthikajain/Neural-Machine-Translation-System.git
-cd Neural-Machine-Translation-System
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Download and prepare dataset (automatic)
-python -c "from src.data.dataset import create_validation_files; create_validation_files()"
+python -m unittest discover -s tests -p 'test_local_app.py' -v
+# Include the real-model test once setup is complete
+SAARTHI_TEST_MODEL=1 python -m unittest discover -s tests -p 'test_local_app.py' -v
 ```
 
-### Training
-```bash
-# Start training with student-friendly defaults
-python train_model.py
-```
+In PowerShell set `$env:SAARTHI_TEST_MODEL = '1'` before running the test command.
 
-### Verification
-```bash
-# Run comprehensive verification tests
-python notebooks/training_pipeline_verification.py
+The demo is in `saarthi_app/`. The original research implementation, training utilities, and diagnostics remain in `src/`, `notebooks/`, and the root training scripts. Model weights, private datasets, and private evaluation outputs are excluded from Git.
 
-# Test architecture components
-python notebooks/comprehensive_verification.py
-```
-
-## 📊 Dataset Information
-
-- **Source**: IIT Bombay English-Hindi Parallel Corpus
-- **Training**: 1,412,400 sentence pairs
-- **Validation**: 520 sentence pairs
-- **Test**: 2,507 sentence pairs
-- **Languages**: English → Hindi
-- **Quality**: Cleaned, deduplicated, no leakage
-
-## 🔬 Verification Results
-
-**Training Pipeline**: ✅ **28/28 tests passed**
-- Dataset loading and tokenization ✅
-- Model architecture and attention ✅  
-- Training loop and optimization ✅
-- Loss function and gradient flow ✅
-- Checkpointing and evaluation ✅
-
-**Architecture Verification**: ✅ **All components verified**
-- Cross-attention handles different sequence lengths
-- Gradient flow through all 93.3M parameters
-- Real tokenizer integration working
-
-## 📚 Documentation
-
-- **[Project Learning Log](docs/PROJECT_LEARNING_LOG.md)**: Complete development journey
-- **[Transformer Verification](docs/TRANSFORMER_VERIFICATION.md)**: Architecture verification report  
-- **[Training Pipeline Verification](docs/TRAINING_PIPELINE_VERIFICATION.md)**: Pre-training safety audit
-
-## 🛠️ Technology Stack
-
-- **Deep Learning**: PyTorch, Custom Transformer implementation
-- **NLP**: SentencePiece tokenization, BLEU evaluation
-- **Data Processing**: Custom dataset pipeline, Unicode normalization  
-- **Training**: AdamW optimizer, warmup scheduling, gradient clipping
-- **Verification**: Comprehensive testing framework
-- **Documentation**: Markdown with detailed implementation notes
-
-## 📁 Project Structure
-
-```
-src/
-├── model/                  # Transformer architecture
-│   ├── transformer.py     # Complete model implementation
-│   ├── attention.py       # Multi-head attention + FFN
-│   ├── encoder.py         # Transformer encoder  
-│   ├── decoder.py         # Transformer decoder
-│   └── embeddings.py      # Token + positional embeddings
-├── training/               # Training framework
-│   ├── trainer.py         # Training utilities and loops
-│   └── train_nmt.py       # Main training script
-├── data/                   # Dataset processing
-│   └── dataset.py         # PyTorch dataset and data loaders
-└── evaluation/             # Evaluation and inference
-    └── evaluator.py        # Translation and BLEU scoring
-
-notebooks/                  # Verification and testing
-├── comprehensive_verification.py      # Architecture testing
-├── training_pipeline_verification.py  # Pre-training audit
-└── test_training_pipeline.py         # Integration testing
-
-docs/                       # Complete documentation
-├── PROJECT_LEARNING_LOG.md           # Learning journey
-├── TRANSFORMER_VERIFICATION.md        # Architecture verification  
-└── TRAINING_PIPELINE_VERIFICATION.md  # Training safety audit
-
-train_model.py             # Simple training launcher
-```
-
-## 🎓 Learning Outcomes
-
-This project demonstrates:
-
-**Deep Learning Engineering**:
-- Transformer architecture implementation from scratch
-- Multi-head attention and encoder-decoder mechanisms
-- Custom training loops with proper optimization
-- Gradient flow verification and debugging
-
-**ML Pipeline Engineering**:
-- Large dataset processing and cleaning
-- Tokenization and vocabulary management  
-- Training pipeline design and verification
-- Checkpointing and model persistence
-
-**Software Engineering**:
-- Modular code architecture and testing
-- Comprehensive documentation and verification
-- Git workflow and project management
-- Production-ready code standards
-
-## 🔍 Key Implementation Highlights
-
-- **Cross-attention handling**: Supports different encoder/decoder sequence lengths
-- **Proper masking**: Causal masking for decoder + padding mask semantics
-- **Label smoothing**: Cross-entropy loss with smoothing for better generalization
-- **Learning rate scheduling**: Transformer-style warmup + inverse square root decay
-- **Memory efficiency**: Dynamic padding and batch processing
-- **Comprehensive testing**: 28-test verification suite ensuring technical correctness
-
-## 📈 Expected Training Performance
-
-**On CPU**: ~2-3 hours per epoch (5 epochs recommended)  
-**Memory usage**: ~1GB during training  
-**Model size**: 356MB (manageable for student hardware)
-
----
-
-**🏆 This project showcases a complete, production-ready neural machine translation pipeline with comprehensive verification and documentation - demonstrating advanced ML engineering skills.**
+See the [original research README](https://github.com/keerthikajain/Neural-Machine-Translation-System/blob/febc34af7ab5ef63322f57df40a61fb73818185c/README.md) for the training walkthrough and research project structure.

@@ -1,0 +1,22 @@
+[
+  {"id":"simple-01","text":"The children are playing in the garden.","facts":"Children are playing in a garden."},
+  {"id":"simple-02","text":"Please close the window before you leave.","facts":"Close the window before leaving."},
+  {"id":"simple-03","text":"I forgot to bring my umbrella.","facts":"Speaker forgot to bring their umbrella."},
+  {"id":"simple-04","text":"There is no milk in the fridge.","facts":"Absence of milk in the fridge."},
+  {"id":"simple-05","text":"Can you tell me where the nearest hospital is?","facts":"Asks where the nearest hospital is."},
+  {"id":"name-01","text":"Meera repaired the radio yesterday.","facts":"Meera, repaired a radio, yesterday."},
+  {"id":"name-02","text":"Ravi emailed Priya about the school trip.","facts":"Ravi emailed Priya, school trip."},
+  {"id":"name-03","text":"Anita took the train from Pune to Mumbai.","facts":"Anita, train, Pune to Mumbai, in that direction."},
+  {"id":"name-04","text":"Kabir gave Asha the blue notebook and kept the red one.","facts":"Kabir gave the blue notebook to Asha and kept the red one."},
+  {"id":"name-05","text":"On Monday, Dr. Verma will meet with Leela in Bengaluru.","facts":"Monday, Dr. Verma will meet Leela, Bengaluru."},
+  {"id":"number-01","text":"Exactly 18 students passed the exam.","facts":"Exactly 18 students passed."},
+  {"id":"number-02","text":"The package weighs 2.5 kilograms.","facts":"Package weight is 2.5 kilograms."},
+  {"id":"number-03","text":"The bus leaves at 7:45 in the morning.","facts":"Bus leaves at 7:45 in the morning."},
+  {"id":"number-04","text":"The shop sold 240 notebooks and returned 12 damaged ones.","facts":"Sold 240 notebooks, returned 12 damaged ones."},
+  {"id":"number-05","text":"The cost fell from 1,250 rupees to 980 rupees.","facts":"Cost fell from 1,250 rupees to 980 rupees."},
+  {"id":"long-01","text":"After the electricity went out, the shopkeeper lit a candle and asked the customers to wait outside until it was safe to return.","facts":"Power went out, shopkeeper lit a candle, asked customers to wait outside until safe."},
+  {"id":"long-02","text":"The doctor told Anjali to take one tablet after dinner for seven days and to call the clinic if the pain returned.","facts":"Doctor told Anjali: one tablet after dinner for seven days, call clinic if pain returns."},
+  {"id":"long-03","text":"Although the train arrived 35 minutes late, Nikhil still reached Jaipur before the museum closed at six in the evening.","facts":"Train 35 minutes late, Nikhil reached Jaipur before the museum closed at 6 p.m."},
+  {"id":"long-04","text":"If the supplier delivers the spare parts by Friday, Priya will repair the washing machine over the weekend. Otherwise, she will call the customer on Monday.","facts":"By Friday delivery condition, Priya repairs over the weekend or calls the customer Monday."},
+  {"id":"long-05","text":"The team tested two versions of the application on the same phones. The newer version opened faster, but it failed to save three of the ten draft messages.","facts":"Two versions tested on same phones, newer opened faster but failed to save three of ten drafts."}
+]

@@ -1,0 +1,579 @@
+{
+  "model": "zaidwhys/indictrans2-en-indic-dist-200M-ct2-int8",
+  "revision": "abf8512c45febe9cc9fbb30ee781bb3be4f18956",
+  "software": {
+    "ctranslate2": "4.9.1",
+    "bhashantar": "0.1.1",
+    "sentencepiece": "0.2.3",
+    "sacrebleu": "2.6.0",
+    "sacremoses": "0.2.0"
+  },
+  "display_check": {
+    "beams": 4,
+    "max_new_tokens": 192,
+    "examples": [
+      {
+        "id": "simple-01",
+        "text": "The children are playing in the garden.",
+        "facts": "Children are playing in a garden.",
+        "prediction": "बच्चे बगीचे में खेल रहे हैं।"
+      },
+      {
+        "id": "simple-02",
+        "text": "Please close the window before you leave.",
+        "facts": "Close the window before leaving.",
+        "prediction": "जाने से पहले कृपया खिड़की बंद कर दें।"
+      },
+      {
+        "id": "simple-03",
+        "text": "I forgot to bring my umbrella.",
+        "facts": "Speaker forgot to bring their umbrella.",
+        "prediction": "मैं अपनी छतरी लाना भूल गया।"
+      },
+      {
+        "id": "simple-04",
+        "text": "There is no milk in the fridge.",
+        "facts": "Absence of milk in the fridge.",
+        "prediction": "फ्रिज में दूध नहीं है।"
+      },
+      {
+        "id": "simple-05",
+        "text": "Can you tell me where the nearest hospital is?",
+        "facts": "Asks where the nearest hospital is.",
+        "prediction": "क्या आप मुझे बता सकते हैं कि निकटतम अस्पताल कहाँ है?"
+      },
+      {
+        "id": "name-01",
+        "text": "Meera repaired the radio yesterday.",
+        "facts": "Meera, repaired a radio, yesterday.",
+        "prediction": "मीरा ने कल रेडियो की मरम्मत की।"
+      },
+      {
+        "id": "name-02",
+        "text": "Ravi emailed Priya about the school trip.",
+        "facts": "Ravi emailed Priya, school trip.",
+        "prediction": "रवि ने प्रिया को स्कूल जाने के बारे में ईमेल किया।"
+      },
+      {
+        "id": "name-03",
+        "text": "Anita took the train from Pune to Mumbai.",
+        "facts": "Anita, train, Pune to Mumbai, in that direction.",
+        "prediction": "अनीता ने पुणे से मुंबई के लिए ट्रेन ली।"
+      },
+      {
+        "id": "name-04",
+        "text": "Kabir gave Asha the blue notebook and kept the red one.",
+        "facts": "Kabir gave the blue notebook to Asha and kept the red one.",
+        "prediction": "कबीर ने आशा को नीली नोटबुक दी और लाल नोटबुक रख ली।"
+      },
+      {
+        "id": "name-05",
+        "text": "On Monday, Dr. Verma will meet with Leela in Bengaluru.",
+        "facts": "Monday, Dr. Verma will meet Leela, Bengaluru.",
+        "prediction": "सोमवार को डॉ. वर्मा बेंगलुरु में लीला से मुलाकात करेंगे।"
+      },
+      {
+        "id": "number-01",
+        "text": "Exactly 18 students passed the exam.",
+        "facts": "Exactly 18 students passed.",
+        "prediction": "ठीक 18 छात्रों ने परीक्षा उत्तीर्ण की।"
+      },
+      {
+        "id": "number-02",
+        "text": "The package weighs 2.5 kilograms.",
+        "facts": "Package weight is 2.5 kilograms.",
+        "prediction": "पैकेज का वजन ढाई किलोग्राम है।"
+      },
+      {
+        "id": "number-03",
+        "text": "The bus leaves at 7:45 in the morning.",
+        "facts": "Bus leaves at 7:45 in the morning.",
+        "prediction": "बस सुबह 7.45 बजे निकलती है।"
+      },
+      {
+        "id": "number-04",
+        "text": "The shop sold 240 notebooks and returned 12 damaged ones.",
+        "facts": "Sold 240 notebooks, returned 12 damaged ones.",
+        "prediction": "दुकान ने 240 नोटबुक बेचे और 12 क्षतिग्रस्त नोटबुक वापस कर दिए।"
+      },
+      {
+        "id": "number-05",
+        "text": "The cost fell from 1,250 rupees to 980 rupees.",
+        "facts": "Cost fell from 1,250 rupees to 980 rupees.",
+        "prediction": "लागत 1,250 रुपये से घटकर 980 रुपये रह गई।"
+      },
+      {
+        "id": "long-01",
+        "text": "After the electricity went out, the shopkeeper lit a candle and asked the customers to wait outside until it was safe to return.",
+        "facts": "Power went out, shopkeeper lit a candle, asked customers to wait outside until safe.",
+        "prediction": "बिजली चली जाने के बाद, दुकानदार ने एक मोमबत्ती जलाई और ग्राहकों को सुरक्षित लौटने तक बाहर इंतजार करने के लिए कहा।"
+      },
+      {
+        "id": "long-02",
+        "text": "The doctor told Anjali to take one tablet after dinner for seven days and to call the clinic if the pain returned.",
+        "facts": "Doctor told Anjali: one tablet after dinner for seven days, call clinic if pain returns.",
+        "prediction": "डॉक्टर ने अंजलि को सात दिनों के लिए रात के खाने के बाद एक गोली लेने और दर्द वापस आने पर क्लीनिक को बुलाने के लिए कहा।"
+      },
+      {
+        "id": "long-03",
+        "text": "Although the train arrived 35 minutes late, Nikhil still reached Jaipur before the museum closed at six in the evening.",
+        "facts": "Train 35 minutes late, Nikhil reached Jaipur before the museum closed at 6 p.m.",
+        "prediction": "हालांकि ट्रेन 35 मिनट देर से पहुंची, फिर भी संग्रहालय शाम छह बजे बंद होने से पहले ही निखिल जयपुर पहुँच गया।"
+      },
+      {
+        "id": "long-04",
+        "text": "If the supplier delivers the spare parts by Friday, Priya will repair the washing machine over the weekend. Otherwise, she will call the customer on Monday.",
+        "facts": "By Friday delivery condition, Priya repairs over the weekend or calls the customer Monday.",
+        "prediction": "यदि आपूर्तिकर्ता शुक्रवार तक स्पेयर पार्ट्स पहुंचाता है, तो प्रिया सप्ताहांत में वाशिंग मशीन की मरम्मत करेगी। अन्यथा, वह सोमवार को ग्राहक को बुलाएगी।"
+      },
+      {
+        "id": "long-05",
+        "text": "The team tested two versions of the application on the same phones. The newer version opened faster, but it failed to save three of the ten draft messages.",
+        "facts": "Two versions tested on same phones, newer opened faster but failed to save three of ten drafts.",
+        "prediction": "टीम ने एक ही फोन पर एप्लिकेशन के दो संस्करणों का परीक्षण किया। नया संस्करण तेजी से खुला, लेकिन यह दस ड्राफ्ट संदेशों में से तीन को सहेजने में विफल रहा।"
+      }
+    ]
+  },
+  "contrast_check": {
+    "beams": 1,
+    "max_new_tokens": 64,
+    "automatic_passes": 34,
+    "total": 42,
+    "examples": [
+      {
+        "id": "name-01-a",
+        "category": "name",
+        "prediction": "मीरा ने रेडियो की मरम्मत की।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-01-b",
+        "category": "name",
+        "prediction": "कविता ने रेडियो की मरम्मत की।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-02-a",
+        "category": "name",
+        "prediction": "अर्जुन स्टेशन पर अपनी छतरी भूल गया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": false,
+        "passed": false
+      },
+      {
+        "id": "name-02-b",
+        "category": "name",
+        "prediction": "रोहन स्टेशन पर अपनी छतरी भूल गया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": false,
+        "passed": false
+      },
+      {
+        "id": "name-03-a",
+        "category": "name",
+        "prediction": "यह पार्सल जयपुर भेजा गया था।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-03-b",
+        "category": "name",
+        "prediction": "पार्सल सूरत भेजा गया था।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-04-a",
+        "category": "name",
+        "prediction": "यह प्रतिनिधिमंडल सोमवार को नेपाल पहुंचा।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-04-b",
+        "category": "name",
+        "prediction": "यह प्रतिनिधिमंडल सोमवार को भूटान पहुंचा।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-05-a",
+        "category": "name",
+        "prediction": "शिक्षक ने निशा को अंतिम अनुच्छेद पढ़ने के लिए कहा।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-05-b",
+        "category": "name",
+        "prediction": "शिक्षक ने पूजा को अंतिम अनुच्छेद पढ़ने के लिए कहा।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-06-a",
+        "category": "name",
+        "prediction": "यह वृत्तचित्र नर्मदा के स्रोत से लेकर समुद्र तक का अनुसरण करता है।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-06-b",
+        "category": "name",
+        "prediction": "यह वृत्तचित्र गोदावरी के स्रोत से लेकर समुद्र तक का अनुसरण करता है।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-07-a",
+        "category": "name",
+        "prediction": "लखनऊ से अंतिम ट्रेन देरी से चली।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "name-07-b",
+        "category": "name",
+        "prediction": "कानपुर से अंतिम ट्रेन देरी से चली।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-08-a",
+        "category": "number",
+        "prediction": "सुरक्षा ब्रीफिंग में ठीक 18 श्रमिकों ने भाग लिया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": false,
+        "passed": false
+      },
+      {
+        "id": "number-08-b",
+        "category": "number",
+        "prediction": "सुरक्षा ब्रीफिंग में ठीक 27 श्रमिकों ने भाग लिया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": false,
+        "passed": false
+      },
+      {
+        "id": "number-09-a",
+        "category": "number",
+        "prediction": "यह पुल 4 किलोमीटर लंबा है।",
+        "expected_found": false,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": false
+      },
+      {
+        "id": "number-09-b",
+        "category": "number",
+        "prediction": "यह पुल 6.8 किलोमीटर लंबा है।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-10-a",
+        "category": "number",
+        "prediction": "यह संग्रह 1998 में जनता के लिए खोल दिया गया था।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": false,
+        "passed": false
+      },
+      {
+        "id": "number-10-b",
+        "category": "number",
+        "prediction": "यह संग्रह 2006 में जनता के लिए खोला गया था।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": false,
+        "passed": false
+      },
+      {
+        "id": "number-11-a",
+        "category": "number",
+        "prediction": "रोगी ने 45 मिनट तक इंतजार किया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-11-b",
+        "category": "number",
+        "prediction": "रोगी ने 70 मिनट तक इंतजार किया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-12-a",
+        "category": "number",
+        "prediction": "माली ने आम के 12 पौधे खरीदे।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-12-b",
+        "category": "number",
+        "prediction": "माली ने आम के 16 पौधे खरीदे।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-13-a",
+        "category": "number",
+        "prediction": "टिकट की कीमत 240 रुपये प्रति व्यक्ति है।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-13-b",
+        "category": "number",
+        "prediction": "टिकट की कीमत 360 रुपये प्रति व्यक्ति है।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-14-a",
+        "category": "number",
+        "prediction": "दोपहर तक आर्द्रता 35 प्रतिशत तक गिर गई।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "number-14-b",
+        "category": "number",
+        "prediction": "दोपहर तक आर्द्रता घटकर 55 प्रतिशत रह गई।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-15-a",
+        "category": "meaning",
+        "prediction": "कैशियर ने सुबह बगल का दरवाजा खोल दिया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-15-b",
+        "category": "meaning",
+        "prediction": "कैशियर ने सुबह बगल का दरवाजा बंद कर दिया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-16-a",
+        "category": "meaning",
+        "prediction": "गाँव की टीम ने अंतिम मैच जीत लिया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-16-b",
+        "category": "meaning",
+        "prediction": "गाँव की टीम अंतिम मैच हार गई।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-17-a",
+        "category": "meaning",
+        "prediction": "रात भर तापमान हिमांक से ऊपर रहा।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-17-b",
+        "category": "meaning",
+        "prediction": "रात भर तापमान हिमांक से नीचे रहा।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-18-a",
+        "category": "meaning",
+        "prediction": "परिषद ने संशोधित बजट को मंजूरी दे दी।",
+        "expected_found": false,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": false
+      },
+      {
+        "id": "meaning-18-b",
+        "category": "meaning",
+        "prediction": "परिषद ने संशोधित बजट को खारिज कर दिया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-19-a",
+        "category": "meaning",
+        "prediction": "किसान ने बाजार में एक पंप खरीदा।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-19-b",
+        "category": "meaning",
+        "prediction": "किसान ने बाजार में एक पंप बेचा।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-20-a",
+        "category": "meaning",
+        "prediction": "बैठक से पहले कूरियर ने फोन किया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-20-b",
+        "category": "meaning",
+        "prediction": "बैठक के बाद कूरियर ने फोन किया।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-21-a",
+        "category": "meaning",
+        "prediction": "उत्तर की ओर जाने वाली बस सूर्यास्त के समय पहुंची।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      },
+      {
+        "id": "meaning-21-b",
+        "category": "meaning",
+        "prediction": "उत्तर की ओर जाने वाली बस सूर्यास्त के समय रवाना हुई।",
+        "expected_found": true,
+        "opposing_found": false,
+        "negation_flag": false,
+        "context_found": true,
+        "passed": true
+      }
+    ],
+    "automatic_by_category": {
+      "name": 12,
+      "number": 9,
+      "meaning": 13
+    }
+  },
+  "validation": {
+    "pairs": 520,
+    "beams": 1,
+    "max_new_tokens": 64,
+    "bleu": 23.20998709502726,
+    "chrfpp": 49.67419954892349,
+    "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.6.0",
+    "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.6.0"
+  }
+}
