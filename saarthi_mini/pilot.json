@@ -1,0 +1,16 @@
+{
+  "version": "mini-pilot-v1",
+  "seed": 2417,
+  "vocab_size": 1600,
+  "model": {"d_model": 128, "n_heads": 4, "n_layers": 2, "d_ff": 384, "dropout": 0.1},
+  "sequence_limit": 64,
+  "decode_limit": 40,
+  "batch_size": 32,
+  "peak_lr": 0.001,
+  "warmup_updates": 60,
+  "max_updates": 600,
+  "evaluate_every": 150,
+  "patience": 3,
+  "min_delta_chrf": 0.5,
+  "max_seconds": 300
+}

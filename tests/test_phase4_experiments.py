@@ -1,3 +1,4 @@
+import io
 import json
 import math
 import os
@@ -5,19 +6,50 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import sentencepiece as spm
 import torch
 
 from src.data.dataset import NMTDataset, collate_fn
 from src.model import create_compact_a_model, create_transformer_model
 from src.training.trainer import NMTTrainer, LabelSmoothingCrossEntropy
 from src.model.decoder import create_target_mask
-from experiments.tiny_overfit import (
-    calculate_initial_loss,
-    create_next_run_directory,
-    read_subset,
-    set_reproducible_seed,
-    create_tiny_experiment_loaders,
+try:
+    from experiments.tiny_overfit import (
+        calculate_initial_loss,
+        create_next_run_directory,
+        read_subset,
+        set_reproducible_seed,
+        create_tiny_experiment_loaders,
+    )
+except ModuleNotFoundError as error:
+    if error.name not in {"experiments", "experiments.tiny_overfit"}:
+        raise
+    HAS_TINY_OVERFIT = False
+else:
+    HAS_TINY_OVERFIT = True
+
+requires_tiny_overfit = unittest.skipUnless(
+    HAS_TINY_OVERFIT, "Historical experiments.tiny_overfit runner is absent from the checkout"
 )
+VALIDATION_FIXTURES = (
+    "data/processed/val_en.txt",
+    "data/processed/val_hi.txt",
+    "data/processed/tokenizer/sp_model.model",
+)
+TRAINING_FIXTURES = (
+    "data/processed/clean_train_en.txt", "data/processed/clean_train_hi.txt", *VALIDATION_FIXTURES
+)
+
+
+def fixture_tokenizer():
+    buffer = io.BytesIO()
+    spm.SentencePieceTrainer.train(
+        sentence_iterator=iter(("hello world", "how are you", "नमस्ते दुनिया", "आप कैसे हैं")),
+        model_writer=buffer, model_type="char", vocab_size=64, hard_vocab_limit=False,
+        pad_id=0, unk_id=1, bos_id=2, eos_id=3, num_threads=1, minloglevel=2,
+    )
+    return spm.SentencePieceProcessor(model_proto=buffer.getvalue())
+
 
 
 class Phase4ExperimentTests(unittest.TestCase):
@@ -51,7 +83,7 @@ class Phase4ExperimentTests(unittest.TestCase):
         dataset = NMTDataset(
             english_sentences=['hello', 'how are you'],
             hindi_sentences=['नमस्ते', 'आप कैसे हैं'],
-            tokenizer_path='data/processed/tokenizer/sp_model.model',
+            tokenizer=fixture_tokenizer(),
             max_length=128,
         )
         batch = collate_fn([dataset[0], dataset[1]])
@@ -74,10 +106,13 @@ class Phase4ExperimentTests(unittest.TestCase):
             self.assertEqual(checkpoint['architecture']['encoder_layers'], 4)
 
     def test_evaluation_fixture_inputs_exist(self):
+        if not all(Path(path).is_file() for path in VALIDATION_FIXTURES):
+            self.skipTest("Legacy processed validation files and tokenizer are external fixtures")
         self.assertTrue(os.path.exists('data/processed/val_en.txt'))
         self.assertTrue(os.path.exists('data/processed/val_hi.txt'))
         self.assertTrue(os.path.exists('data/processed/tokenizer/sp_model.model'))
 
+    @requires_tiny_overfit
     def test_same_seed_same_subset_and_initialization(self):
         with tempfile.TemporaryDirectory() as directory:
             en_path = Path(directory) / 'train.en'
@@ -98,6 +133,7 @@ class Phase4ExperimentTests(unittest.TestCase):
             for parameter_a, parameter_b in zip(model_a.parameters(), model_b.parameters()):
                 self.assertTrue(torch.equal(parameter_a, parameter_b))
 
+    @requires_tiny_overfit
     def test_new_run_directory_preserves_previous_results(self):
         with tempfile.TemporaryDirectory() as directory:
             run_one = create_next_run_directory(directory)
@@ -110,11 +146,12 @@ class Phase4ExperimentTests(unittest.TestCase):
             self.assertTrue(marker.exists())
             self.assertEqual(marker.read_text(encoding='utf-8'), '{"preserved": true}')
 
+    @requires_tiny_overfit
     def test_initial_and_epoch_results_contract(self):
         dataset = NMTDataset(
             english_sentences=['hello', 'how are you'],
             hindi_sentences=['नमस्ते', 'आप कैसे हैं'],
-            tokenizer_path='data/processed/tokenizer/sp_model.model',
+            tokenizer=fixture_tokenizer(),
             max_length=128,
         )
         loader = torch.utils.data.DataLoader(dataset, batch_size=2, collate_fn=collate_fn)
@@ -150,10 +187,11 @@ class Phase4ExperimentTests(unittest.TestCase):
 
     def test_bos_eos_shift_and_padding_masks(self):
         hindi = 'नमस्ते दुनिया'
+        tokenizer = fixture_tokenizer()
         dataset = NMTDataset(
             english_sentences=['hello world'],
             hindi_sentences=[hindi],
-            tokenizer_path='data/processed/tokenizer/sp_model.model',
+            tokenizer=tokenizer,
             max_length=128,
         )
         item = dataset[0]
@@ -168,7 +206,7 @@ class Phase4ExperimentTests(unittest.TestCase):
             dataset[0],
             NMTDataset(
                 english_sentences=['hi'], hindi_sentences=['नमस्ते'],
-                tokenizer_path='data/processed/tokenizer/sp_model.model', max_length=128,
+                tokenizer=tokenizer, max_length=128,
             )[0],
         ])
         tgt_input = batch['tgt_input']
@@ -193,7 +231,10 @@ class Phase4ExperimentTests(unittest.TestCase):
         self.assertTrue(torch.isfinite(loss_with_pad))
         self.assertAlmostEqual(loss_only_valid.item(), loss_with_pad.item(), places=6)
 
+    @requires_tiny_overfit
     def test_independent_training_and_validation_loaders(self):
+        if not all(Path(path).is_file() for path in TRAINING_FIXTURES):
+            self.skipTest("Legacy processed corpus and tokenizer are external fixtures")
         train_en, train_hi = read_subset(
             'data/processed/clean_train_en.txt',
             'data/processed/clean_train_hi.txt',

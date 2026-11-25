@@ -1,0 +1,23 @@
+{
+  "version": "mini-gates-v1",
+  "cpu_candidate": {
+    "validation_min_chrf++": 25,
+    "validation_min_gain_over_retrieval_chrf++": 3,
+    "validation_min_source_delta_nll": 0.25,
+    "validation_max_repeated_word_trigram_rate": 0.05,
+    "validation_max_no_eos_rate": 0.05
+  },
+  "working_translator": {
+    "test_min_chrf++": 35,
+    "test_min_bleu_13a": 12,
+    "test_min_gain_over_retrieval_chrf++": 5,
+    "test_max_seen_minus_test_chrf++": 25,
+    "test_max_no_eos_rate": 0.05,
+    "test_max_repeated_word_trigram_rate": 0.05,
+    "test_min_bilingual_factual_adequacy": 0.75,
+    "test_min_changed_name_pair_pass_rate": 0.75,
+    "test_min_changed_number_pair_pass_rate": 0.75,
+    "test_min_meaning_pair_pass_rate": 0.75
+  },
+  "decision": "All gates in each stage must pass. CPU pilot is a feasibility check. Final adequacy and contrast passes require independent bilingual review of both sides, including polarity, tense, roles and changed facts. Exact matches are descriptive because multiple translations can be valid."
+}
