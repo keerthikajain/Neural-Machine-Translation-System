@@ -68,6 +68,23 @@ function Masthead() {
   );
 }
 
+function Welcome({ hidden }) {
+  return (
+    <main className="welcome" aria-labelledby="welcome-heading" hidden={hidden}>
+      <div className="welcome-content">
+        <img src="/logo.svg" alt="" width="80" height="80" />
+        <h1 id="welcome-heading" tabIndex={-1}>Saarthi</h1>
+        <p>Bridging languages,<br />building connections.</p>
+      </div>
+      <img className="welcome-art" src="/skyline-mobile.png" alt="" />
+      <div className="welcome-bottom">
+        <a className="welcome-start" href="#translate-view">Get Started <Icon name="arrow" /></a>
+        <small>A step towards a more connected world.</small>
+      </div>
+    </main>
+  );
+}
+
 function HistoryList({ id, entries }) {
   return (
     <ul id={id} className="history-list">
@@ -268,7 +285,7 @@ function useTranslationHistory() {
 }
 
 function pageFromHash() {
-  return pages.find(page => page.id === window.location.hash.slice(1)) ?? pages[0];
+  return pages.find(page => page.id === window.location.hash.slice(1)) ?? null;
 }
 
 function App() {
@@ -295,7 +312,8 @@ function App() {
 
   useLayoutEffect(() => {
     if (!navigation.focus) return;
-    const destination = focusSource.current ? source.current : document.getElementById(navigation.page.heading);
+    const heading = navigation.page?.heading ?? "welcome-heading";
+    const destination = focusSource.current && navigation.page ? source.current : document.getElementById(heading);
     focusSource.current = false;
     destination.focus({ preventScroll: true });
     window.scrollTo(0, 0);
@@ -369,12 +387,13 @@ function App() {
     }
   }
 
-  const active = navigation.page.id;
+  const active = navigation.page?.id;
   return (
     <>
       <IconLibrary />
-      <a className="skip" href="#main">Skip to content</a>
-      <div className="app-shell">
+      <Welcome hidden={Boolean(active)} />
+      <a className="skip" href="#main" hidden={!active}>Skip to content</a>
+      <div className="app-shell" hidden={!active}>
         <Sidebar active={active} />
         <main id="main" tabIndex={-1}>
           <Masthead />
